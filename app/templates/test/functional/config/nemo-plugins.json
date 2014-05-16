@@ -4,9 +4,13 @@
 			"module": "nemo-drivex",
 			"register": true
 		},
-		"screenshot": {
-			"module": "nemo-screenshot",
+		"locatex": {
+			"module": "nemo-locatex",
 			"register": true
-		}
+		},
+    "view": {
+      "module": "nemo-view",
+      "register": true
+    }
 	}
 }

@@ -36,7 +36,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       name: 'browserOption',
       message: 'Which browser do you want to use by default?',
       default: "phantomjs",
-      "choices": ["phantomjs", "firefox"]
+      "choices": ["phantomjs", "firefox", "chrome"]
     }];
 
     this.prompt(prompts, function(props) {
@@ -54,11 +54,13 @@ var NemoGenerator = yeoman.generators.Base.extend({
       reportDir = baseDir + "/report",
       specDir = baseDir + "/spec",
       dataDir = baseDir + "/data",
-      viewDir = baseDir + "/view",
-      browserOption = this.browserOption;
+      libDir = baseDir + "/lib",
+      browserOption = this.browserOption,
+      taskDir = "tasks/";
+    var done = this.async();
     //base test directory
     this.mkdir(baseDir);
-    this.copy('_Gruntfile.js', 'Gruntfile.js');
+    this.copy('loopmocha.js', taskDir + 'loopmocha.js');
     //config dir
     this.mkdir(configDir);
     this.copy('test/functional/config/nemo-plugins.json', configDir + '/nemo-plugins.json');
@@ -75,26 +77,28 @@ var NemoGenerator = yeoman.generators.Base.extend({
     this.mkdir(dataDir);
     this.copy('test/functional/data/setup.js', dataDir + '/setup.js');
     //view dir
-    this.mkdir(viewDir);
-    this.copy('test/functional/view/formExample.js', viewDir + '/formExample.js');
-
+    this.mkdir(libDir);
+    this.copy('test/functional/lib/lifeStory.js', libDir + '/lifeStory.js');
+    done();
     // this.mkdir('app/templates');
 
     // this.copy('_package.json', 'package.json');
     // this.copy('_bower.json', 'bower.json');
   },
   installThings: function() {
-    var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo-mocha-factory@v0.0.1", "grunt-loop-mocha@v0.2.6", "nemo-drivex@v0.1.0", "nemo-screenshot@v0.1.7", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
+    var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.1.0", "nemo-mocha-factory@^v0.1.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
+    var done = this.async();
     cmd.on('close', function(code) {
       console.log('child process exited with code ' + code);
-
+      done();
     });
-  }
-
-  // projectfiles: function () {
-  //   this.copy('editorconfig', '.editorconfig');
-  //   this.copy('jshintrc', '.jshintrc');
-  // }
+  },
+  manualSteps: function() {
+    this.log(chalk.green('You\'re almost set. Please add the following line to your Gruntfile where you register tasks:'));
+    this.log(chalk.green('grunt.registerTask(\'automation\', [\'loopmocha:local\']);'));
+    var done = this.async();
+    done();
+  },
 });
 
 module.exports = NemoGenerator;
