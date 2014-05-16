@@ -1,0 +1,1 @@
+# Location for functional tests (e.g. selenium-webdriver/mocha tests)
