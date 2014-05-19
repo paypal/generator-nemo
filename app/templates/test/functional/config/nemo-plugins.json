@@ -9,8 +9,7 @@
 			"register": true
 		},
     "view": {
-      "module": "nemo-view",
-      "register": true
+      "module": "nemo-view"
     }
 	}
 }
