@@ -1,0 +1,9 @@
+Description:
+    Creates a new Nemo view locator JSON file
+
+Example:
+    yo nemo [name]
+
+    This will:
+        prompt you for information about the locators you want to add to this view locator JSON file
+        create the file [name].json

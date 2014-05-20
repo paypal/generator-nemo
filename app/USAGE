@@ -1,18 +1,10 @@
 Description:
-    Creates a new Nemo testing installation in existing nodejs web application.
+    Creates a new Nemo testing installation in existing Kraken-JS 1.0+ web application.
 
 Example (from base directory of your web application):
     yo nemo
 
-    This will create:
-        test/functional: Container for all functional test assets
-        test/functional/config/nemo-plugins.json: JSON for holding plugin configuration
-        test/functional/data/setup.js: module for exporting spec setup configuration
-        test/functional/locator/formExample.json: example locator file accompanying example spec/view
-        test/functional/report: report output directory (created with README in order to git commit the directory)
-        test/functional/spec/example.js: first spec file. accompanies view/locator "formExample" files
-        test/functional/view/formExample.js: first view file. accompanies spec/locator example files
-        _Gruntfile.NEMO.js: commented Gruntfile, indicating which sections to copy to your main Gruntfile.js
+    This will prompt for some information, and then install required files for Nemo automation
 
     This will add and install:
     	all required dependencies for running Nemo automation EXCEPT webdrivers or browsers

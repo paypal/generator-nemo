@@ -20,12 +20,12 @@ module.exports = function loopmocha(grunt) {
         "reporter": grunt.option("reporter") || "spec"
       },
       "nemoData": {
-        "autoBaseDir": "<%= loscape('loopmocha.basedir') %>",
-        "targetBrowser": nconf.get("TARGET_BROWSER") || "<%= browserOption %>"
+        "autoBaseDir": "<%= loscape('loopmocha.basedir') %>"
+        ,"targetBrowser": nconf.get("TARGET_BROWSER") || "<%= browserOption %>"
         <% if (seleniumJarPath) { %>
-        ,"targetServer": nconf.get("TARGET_SERVER") || "localhost",
-        "seleniumJar": nconf.get("SELENIUM_JAR") || "<%= seleniumJarPath %>",
-        "serverProps": {
+        ,"targetServer": nconf.get("TARGET_SERVER") || "localhost"
+        ,"seleniumJar": nconf.get("SELENIUM_JAR") || "<%= seleniumJarPath %>"
+        ,"serverProps": {
           "port": 4444
         }
         <% } %>
