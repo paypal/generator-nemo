@@ -21,13 +21,16 @@ module.exports = function loopmocha(grunt) {
       },
       "nemoData": {
         "autoBaseDir": "<%= loscape('loopmocha.basedir') %>",
-        "targetBrowser": nconf.get("TARGET_BROWSER") || "<%= browserOption %>",
+        "targetBrowser": nconf.get("TARGET_BROWSER") || "<%= browserOption %>"
         <% if (seleniumJarPath) { %>
-        "targetServer": nconf.get("TARGET_SERVER") || "localhost",
+        ,"targetServer": nconf.get("TARGET_SERVER") || "localhost",
         "seleniumJar": nconf.get("SELENIUM_JAR") || "<%= seleniumJarPath %>",
         "serverProps": {
           "port": 4444
         }
+        <% } %>
+        <% if (customSpec === "Yes") { %>
+        ,"targetBaseUrl": "<%= targetBaseUrl %>"
         <% } %>
       },
       "iterations": [{

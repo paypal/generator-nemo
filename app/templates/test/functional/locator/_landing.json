@@ -1,0 +1,6 @@
+{
+  "page": {
+    "locator": "<%= landingPageLocator %>",
+    "type": "css"
+  }
+}

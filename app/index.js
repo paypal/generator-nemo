@@ -43,6 +43,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       type: 'input',
       name: 'seleniumJarPath',
       message: 'Where is your selenium standalone Jar file? (Windows user? Provide windows style path)',
+      default: '/usr/local/bin/selenium-server-standalone.jar',
       when: function(answers) {
         var bo = answers.browserOption;
         return (bo === "firefox" || bo === "safari");
@@ -54,13 +55,58 @@ var NemoGenerator = yeoman.generators.Base.extend({
         }
         return true;
       }
-    }, ];
+    }, {
+      type: 'list',
+      name: 'customSpec',
+      choices: ['Yes', 'No'],
+      message: 'Would you like to add a custom spec for your application? It will test for presence of text on your landing page.'
+
+    }, {
+      type: 'input',
+      name: 'targetBaseUrl',
+      default: 'http://localhost:8000',
+      message: 'What is the URL of your application landing page (where your first test should start)?',
+      when: function(answers) {
+        return (answers.customSpec === "Yes");
+      }
+    }, {
+      type: 'input',
+      name: 'landingPageLocator',
+      default: '#wrapper',
+      message: 'What CSS selctor will select distinct text on your landing page?',
+      validate: function(landingPageSelector) {
+        if (landingPageSelector !== "") {
+          return true;
+        }
+        return "You need to add a CSS selector for your test to use.";
+      },
+      when: function(answers) {
+        return (answers.customSpec === "Yes");
+      }
+    }, {
+      type: 'input',
+      name: 'landingPageText',
+      default: 'Hello, index!',
+      message: 'What text should appear on your application\'s landing page within the locator provided above?',
+      validate: function(homePageText) {
+        if (homePageText !== "") {
+          return true;
+        }
+        return "You need to add some text for your first test to check.";
+      },
+      when: function(answers) {
+        return (answers.customSpec === "Yes");
+      }
+    }];
 
     this.prompt(prompts, function(props) {
       this.baseDirOption = props.baseDirOption;
       this.browserOption = props.browserOption;
       this.seleniumJarPath = props.seleniumJarPath;
-
+      this.customSpec = props.customSpec;
+      this.targetBaseUrl = props.targetBaseUrl;
+      this.landingPageLocator = props.landingPageLocator;
+      this.landingPageText = props.landingPageText;
       done();
     }.bind(this));
   },
@@ -91,6 +137,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     //locator dir
     this.mkdir(locatorDir);
     this.copy('test/functional/locator/formExample.json', locatorDir + '/formExample.json');
+
     //report dir
     this.mkdir(reportDir);
     this.copy('test/functional/report/README.md', reportDir + '/README.md');
@@ -99,10 +146,14 @@ var NemoGenerator = yeoman.generators.Base.extend({
     this.copy('test/functional/spec/example.js', specDir + '/example.js');
     //data dir
     this.mkdir(dataDir);
-    this.copy('test/functional/data/setup.js', dataDir + '/setup.js');
-    //view dir
+    this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
+    //lib dir
     this.mkdir(libDir);
     this.copy('test/functional/lib/lifeStory.js', libDir + '/lifeStory.js');
+    if (this.customSpec === "Yes") {
+      this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
+      this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
+    }
     done();
     // this.mkdir('app/templates');
 
@@ -129,7 +180,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
         done();
         return;
       }
-      var result = data.replace(/grunt.registerTask/, 'grunt.registerTask(\'automation\', [\'loopmocha:local\']);\ngrunt.registerTask');
+      var result = data.replace(/grunt.registerTask/, 'grunt.registerTask(\'automation\', [\'loopmocha:local\']);\n\tgrunt.registerTask');
 
       fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
         if (err) {
