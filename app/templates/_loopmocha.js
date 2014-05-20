@@ -10,7 +10,7 @@ module.exports = function loopmocha(grunt) {
   // Options
   return {
     "src": ["<%= loscape('loopmocha.basedir') %>/spec/*.js"],
-    "basedir": process.cwd() + "/" + "test/functional",
+    "basedir": process.cwd() + "/" + "<%= baseDirOption %>",
     "options": {
       "mocha": {
         "reportLocation": grunt.option("reportLocation") || "<%= loscape('loopmocha.basedir') %>/report",
