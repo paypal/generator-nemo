@@ -40,5 +40,33 @@ module.exports = function loopmocha(grunt) {
     "local": {
       "src": "<%= loscape('loopmocha.src') %>"
     }
+    <% if (sauceSetup === "Yes") { %>
+    ,"sauce": {
+      "src": "<%= loscape('loopmocha.src') %>",
+      "options": {
+        "nemoData": {
+          <% if (deployedUrl) { %>
+          "targetBaseUrl": "<%= deployedUrl %>",
+          <% } %>
+          "targetServer": "http://<%= sauceUser %>:<%= sauceKey %>@ondemand.saucelabs.com:80/wd/hub",
+          "serverCaps": {
+            "username": "<%= sauceUser %>",
+            "accessKey": "<%= sauceKey %>"
+          }
+        },
+        "iterations": [{
+          "description": "iphone",
+          "nemoData": {
+            "targetBrowser": "iphone"
+          }
+        }, {
+          "description": "android",
+          "nemoData": {
+            "targetBrowser": "android"
+          }
+        }]
+      }
+    }
+    <% } %>
   };
 };

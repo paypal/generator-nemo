@@ -1,6 +1,6 @@
 {
-	"swindonOption": {
-		"locator": "select[name='ddlTown'] option[value='Swindon']",
+	"citySelect": {
+		"locator": "select[name='ddlTown']",
 		"type": "css"
 	},
 	"blueCheckbox": {

@@ -36,7 +36,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     }, {
       type: 'list',
       name: 'browserOption',
-      message: 'Which browser do you want to use by default?',
+      message: 'Which desktop browser do you want to use by default?',
       default: "phantomjs",
       "choices": ["phantomjs", "firefox", "chrome", "safari"]
     }, {
@@ -97,6 +97,44 @@ var NemoGenerator = yeoman.generators.Base.extend({
       when: function(answers) {
         return (answers.customSpec === "Yes");
       }
+    }, {
+      type: 'input',
+      name: 'deployedUrl',
+      message: 'What is your deployed application landing page URL (if different from your already supplied URL)',
+      when: function(answers) {
+        return (answers.customSpec === "Yes");
+      }
+    }, {
+      type: 'list',
+      name: 'sauceSetup',
+      choices: ['Yes', 'No'],
+      message: 'Would you like to set up SauceLabs to test on mobile browsers?'
+    }, {
+      type: 'input',
+      name: 'sauceUser',
+      message: 'What is your SauceLabs username?',
+      validate: function(username) {
+        if (username !== "") {
+          return true;
+        }
+        return "You need to provide a username.";
+      },
+      when: function(answers) {
+        return (answers.sauceSetup === "Yes");
+      }
+    }, {
+      type: 'input',
+      name: 'sauceKey',
+      message: 'What is your SauceLabs access key?',
+      validate: function(key) {
+        if (key !== "") {
+          return true;
+        }
+        return "You need to provide an access key.";
+      },
+      when: function(answers) {
+        return (answers.sauceSetup === "Yes");
+      }
     }];
 
     this.prompt(prompts, function(props) {
@@ -107,10 +145,41 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.targetBaseUrl = props.targetBaseUrl;
       this.landingPageLocator = props.landingPageLocator;
       this.landingPageText = props.landingPageText;
+      this.sauceSetup = props.sauceSetup;
+      this.sauceUser = props.sauceUser;
+      this.sauceKey = props.sauceKey;
+      this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       done();
     }.bind(this));
   },
+  editGruntfile: function() {
+    var that = this;
+    var done = this.async();
 
+    //let's update Gruntfile.js if possible
+    fs.readFile('Gruntfile.js', 'utf8', function(err, data) {
+
+      if (err) {
+        return console.log(err);
+      }
+      if (data.match(/loopmocha/) !== null) {
+        //already here?
+        done();
+        return;
+      }
+      var replaceWith = 'grunt.registerTask(\'auto\', [\'loopmocha:local\']);';
+      replaceWith += (that.sauceSetup === "Yes") ? '\n\tgrunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
+      replaceWith += '\n\tgrunt.registerTask';
+      var result = data.replace(/grunt.registerTask/, replaceWith);
+
+      fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
+        if (err) {
+          return console.log(err);
+        }
+        done();
+      });
+    });
+  },
   app: function() {
     var baseDir = this.baseDirOption,
       configDir = baseDir + "/config",
@@ -161,35 +230,14 @@ var NemoGenerator = yeoman.generators.Base.extend({
     // this.copy('_bower.json', 'bower.json');
   },
   installThings: function() {
-    var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.1.0", "nemo-view@^v0.1.0", "nemo-mocha-factory@^v0.1.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
+    var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.1.0", "nemo-view@^v0.1.0", "nemo-mocha-factory@^v0.1.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nemo-screenshot@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
     var done = this.async();
     cmd.on('close', function(code) {
       console.log('child process exited with code ' + code);
       done();
     });
   },
-  editGruntfile: function() {
-    var done = this.async();
-    //let's update Gruntfile.js if possible
-    fs.readFile('Gruntfile.js', 'utf8', function(err, data) {
-      if (err) {
-        return console.log(err);
-      }
-      if (data.indexOf("loopmocha")) {
-        //already here?
-        done();
-        return;
-      }
-      var result = data.replace(/grunt.registerTask/, 'grunt.registerTask(\'automation\', [\'loopmocha:local\']);\n\tgrunt.registerTask');
 
-      fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
-        if (err) {
-          return console.log(err);
-        }
-        done();
-      });
-    });
-  },
   finalValidation: function() {
     var done = this.async();
     var browser = this.browserOption;
@@ -199,8 +247,9 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
       this.log(chalk.green("Please see"), chalk.underline.blue.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
     }
-
-    this.log(chalk.green("Now try running 'grunt automation'"));
+    var tryRunning = "Now try running 'grunt auto'";
+    tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
+    this.log(chalk.green(tryRunning));
     done();
   },
 });

@@ -1,15 +1,19 @@
 {
-	"plugins": {
-		"drivex": {
-			"module": "nemo-drivex",
-			"register": true
-		},
-		"locatex": {
-			"module": "nemo-locatex",
-			"register": true
-		},
+  "plugins": {
+    "drivex": {
+      "module": "nemo-drivex",
+      "register": true
+    },
+    "locatex": {
+      "module": "nemo-locatex",
+      "register": true
+    },
     "view": {
       "module": "nemo-view"
+    },
+    "screenshot": {
+      "module": "nemo-screenshot",
+      "register": true
     }
-	}
+  }
 }

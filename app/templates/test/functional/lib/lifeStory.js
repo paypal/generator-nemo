@@ -4,7 +4,7 @@ module.exports = function lifeStory(nemo) {
     "tellLifeStory": function () {
       nemo.view.formExample.blueCheckbox().click();
       nemo.view.formExample.lifeStoryText().sendKeys("I grew up in Swindon and was the fifth member of The Beatles.");
-      return nemo.view.formExample.swindonOption().click();
+      return nemo.view.formExample.citySelectOptionText("Swindon");
     }
   };
 };
