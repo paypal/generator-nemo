@@ -10,10 +10,6 @@
     },
     "view": {
       "module": "nemo-view"
-    },
-    "screenshot": {
-      "module": "nemo-screenshot",
-      "register": true
     }
   }
 }
