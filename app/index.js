@@ -214,8 +214,8 @@ var NemoGenerator = yeoman.generators.Base.extend({
     this.mkdir(specDir);
     this.copy('test/functional/spec/example.js', specDir + '/example.js');
     //data dir
-    this.mkdir(dataDir);
-    this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
+    //this.mkdir(dataDir);
+    //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
     //lib dir
     this.mkdir(libDir);
     this.copy('test/functional/lib/lifeStory.js', libDir + '/lifeStory.js');

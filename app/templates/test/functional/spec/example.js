@@ -1,19 +1,18 @@
 /*global describe:true, it:true, before:true, after:true */
 'use strict';
 
-var assert = require('assert'),
-  nemoFactory = require('nemo-mocha-factory'),
-  setup = require('../data/setup').lifeStorySpec,
+var nemoFactory = require('nemo-mocha-factory'),
   lifeStory = require('../lib/lifeStory'),
   plugins = require('../config/nemo-plugins'),
-  nemo = {};
+  setup = {
+    "view": ['formExample']
+  };
 
 describe('Nemo @exampleSuite@', function() {
 
   nemoFactory({
     'plugins': plugins,
-    'setup': setup,
-    'context': nemo
+    'setup': setup
   });
 
   it('will @tellMyLifeStory@', function(done) {
