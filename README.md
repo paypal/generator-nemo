@@ -4,7 +4,7 @@ Generator for adding Nemo functional tests to a [Kraken 1.0](https://github.com/
 
 ## Pre requisites
 
-1. You need to have a kraken 1.0 based application
+1. You need to have a kraken 1.0 based application. The best is if you start with an app generated from the [generator-kraken](https://github.com/krakenjs/generator-kraken) generator. The sample pages in the generated app will match up exactly with examples that will come from this generator.
 2. If you plan to see tests run on your machine, you need to decide on and set up the appropriate webdriver
   * Please see https://github.com/paypal/nemo-docs/blob/master/driver-setup.md
 3. You need to have Yeoman installed:
