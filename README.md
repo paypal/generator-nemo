@@ -27,7 +27,3 @@ $ yo nemo
 Follow prompts. Take special care during the browser/driver setup questions (again please read about [driver setup](https://github.com/paypal/nemo-docs/blob/master/driver-setup.md) )
 
 Once complete, you should be able to see your first suite run using the command `grunt automation`
-
-## License
-
-MIT
