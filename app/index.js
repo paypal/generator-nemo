@@ -72,7 +72,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     }, {
       type: 'input',
       name: 'landingPageLocator',
-      default: '#wrapper',
+      default: '#wrapper h1',
       message: 'What CSS selctor will select distinct text on your landing page?',
       validate: function(landingPageSelector) {
         if (landingPageSelector !== "") {
@@ -205,20 +205,20 @@ var NemoGenerator = yeoman.generators.Base.extend({
     this.copy('test/functional/config/nemo-plugins.json', configDir + '/nemo-plugins.json');
     //locator dir
     this.mkdir(locatorDir);
-    this.copy('test/functional/locator/formExample.json', locatorDir + '/formExample.json');
+    this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
 
     //report dir
     this.mkdir(reportDir);
     this.copy('test/functional/report/README.md', reportDir + '/README.md');
     //spec dir
     this.mkdir(specDir);
-    this.copy('test/functional/spec/example.js', specDir + '/example.js');
+    this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
     //data dir
     //this.mkdir(dataDir);
     //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
     //lib dir
     this.mkdir(libDir);
-    this.copy('test/functional/lib/lifeStory.js', libDir + '/lifeStory.js');
+    this.copy('test/functional/lib/yreg.js', libDir + '/yreg.js');
     if (this.customSpec === "Yes") {
       this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
       this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
@@ -245,7 +245,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     if (browser === "phantomjs" || browser === "chrome") {
       var myBrowser = (browser === "phantomjs") ? ["PhantomJS", "PhantomJS"] : ["Chrome", "chromedriver"];
       this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
-      this.log(chalk.green("Please see"), chalk.underline.blue.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
+      this.log(chalk.green("Please see"), chalk.underline.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
     }
     var tryRunning = "Now try running 'grunt auto'";
     tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";

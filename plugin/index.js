@@ -4,7 +4,7 @@ var yeoman = require('yeoman-generator');
 var fs = require('fs');
 
 
-var PluginGenerator = yeoman.generators.Base.extend({
+var PluginGenerator = yeoman.generators.NamedBase.extend({
   init: function() {
     var done = this.async();
     var prompts = [{
@@ -12,17 +12,6 @@ var PluginGenerator = yeoman.generators.Base.extend({
       name: 'baseDirOption',
       message: 'What is the base directory for your functional tests, starting from your app root directory?',
       default: "test/functional"
-    }, {
-      type: 'input',
-      name: 'pluginName',
-      message: 'Which Nemo plugin would you like to install?',
-      validate: function(plugin) {
-        if (plugin.constructor !== String || plugin === "") {
-          return "Please provide the name of an npm published nemo plugin"
-        } else {
-          return true;
-        }
-      }
     }, {
       type: 'list',
       name: 'pluginVersion',
@@ -37,7 +26,7 @@ var PluginGenerator = yeoman.generators.Base.extend({
 
     this.prompt(prompts, function(props) {
       this.baseDirOption = props.baseDirOption;
-      this.pluginName = props.pluginName;
+      this.pluginName = this.name;
       this.pluginVersion = props.pluginVersion;
       this.autoRegister = props.autoRegister;
       done();

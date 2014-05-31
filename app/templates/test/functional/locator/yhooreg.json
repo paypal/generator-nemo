@@ -1,0 +1,26 @@
+{
+  "fname": {
+    "locator": "first-name",
+    "type": "id"
+  },
+  "lname": {
+    "locator": "last-name",
+    "type": "id"
+  },
+  "bmonth": {
+    "locator": "month",
+    "type": "id"
+  },
+  "bday": {
+    "locator": "day",
+    "type": "id"
+  },
+  "byear": {
+    "locator": "year",
+    "type": "id"
+  },
+  "maleradio": {
+    "locator": "label[for='male']",
+    "type": "css"
+  }
+}
