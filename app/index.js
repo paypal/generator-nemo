@@ -168,8 +168,8 @@ var NemoGenerator = yeoman.generators.Base.extend({
         return;
       }
       var replaceWith = 'grunt.registerTask(\'auto\', [\'loopmocha:local\']);';
-      replaceWith += (that.sauceSetup === "Yes") ? '\n\tgrunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
-      replaceWith += '\n\tgrunt.registerTask';
+      replaceWith += (that.sauceSetup === "Yes") ? '\n    grunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
+      replaceWith += '\n    grunt.registerTask';
       var result = data.replace(/grunt.registerTask/, replaceWith);
 
       fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
