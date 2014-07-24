@@ -6,12 +6,12 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.paypal.com:NodeTestTools/generator-nemo.git"
+    "url": "git@github.com:paypal/generator-nemo.git"
   },
   "author": {
     "name": "Matt Edelman",
-    "email": "medelman@paypal.com",
-    "url": "https://github.paypal.com/NodeTestTools"
+    "email": "mattedelman@gmail.com",
+    "url": "https://github.com/grawk"
   },
   "engines": {
     "node": ">=0.10.0"
