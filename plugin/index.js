@@ -51,13 +51,13 @@ var PluginGenerator = yeoman.generators.NamedBase.extend({
     var done = this.async();
     var that = this;
     var pluginName = that.registerAs.name || that.registerAs;
-    var module = that.registerAs.module || that.pluginName;
+    var moduleName = that.registerAs.module || that.pluginName;
     var pluginsFile = this.baseDirOption + '/config/nemo-plugins.json';
     //open plugins config
     fs.readFile(pluginsFile, 'utf8', function(err, data) {
       var pluginsJson = JSON.parse(data);
       pluginsJson.plugins[pluginName] = {
-        "module": that.pluginName
+        "module": moduleName
       }
       if (that.autoRegister === "Yes") {
         pluginsJson.plugins[pluginName].register = true;
