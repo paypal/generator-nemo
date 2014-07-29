@@ -60,7 +60,7 @@ var PluginGenerator = yeoman.generators.NamedBase.extend({
         "module": that.pluginName
       }
       if (that.autoRegister === "Yes") {
-        pluginsJson.plugins[that.registerAs].register = true;
+        pluginsJson.plugins[pluginName].register = true;
       }
       fs.writeFile(pluginsFile, JSON.stringify(pluginsJson, null, 2), function(err) {
         if (err) {
