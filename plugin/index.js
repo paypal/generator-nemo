@@ -56,7 +56,7 @@ var PluginGenerator = yeoman.generators.NamedBase.extend({
     //open plugins config
     fs.readFile(pluginsFile, 'utf8', function(err, data) {
       var pluginsJson = JSON.parse(data);
-      pluginsJson.plugins[] = {
+      pluginsJson.plugins[pluginName] = {
         "module": that.pluginName
       }
       if (that.autoRegister === "Yes") {
