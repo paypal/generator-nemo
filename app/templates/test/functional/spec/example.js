@@ -4,15 +4,15 @@
 var nemoFactory = require('nemo-mocha-factory'),
   lifeStory = require('../lib/lifeStory'),
   plugins = require('../config/nemo-plugins'),
-  setup = {
-    "view": ['formExample']
-  };
+  nemo = {},
+  setup = {};
 
 describe('Nemo @exampleSuite@', function() {
 
   nemoFactory({
     'plugins': plugins,
-    'setup': setup
+    'setup': setup,
+    'context': nemo
   });
 
   it('will @tellMyLifeStory@', function(done) {

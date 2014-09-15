@@ -2,7 +2,7 @@
 module.exports = function yreg(nemo) {
   return {
     "registerYahooAccount": function() {
-      var yr = nemo.view.yhooreg;
+      var yr = nemo.view.addView('yhooreg');
       yr.fname().sendKeys('Matthew');
       yr.lname().sendKeys('Edelman');
       yr.bmonthOptionValue('11');

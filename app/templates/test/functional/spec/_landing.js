@@ -3,6 +3,7 @@
 
 var nemoFactory = require('nemo-mocha-factory'),
   plugins = require('../config/nemo-plugins'),
+  nemo = {},
   setup = {
     "view": ['landing']
   };
@@ -11,17 +12,18 @@ describe('Nemo @landingSuite@', function() {
 
   nemoFactory({
     'plugins': plugins,
-    'setup': setup
+    'setup': setup,
+    'context': nemo
   });
 
   it('will @loadAndVerifyLandingPage@', function(done) {
     nemo.driver.get(nemo.props.targetBaseUrl);
     nemo.view.landing.pageVisible();
     nemo.view.landing.page().getText().then(function(text) {
-      if (text === "<%= landingPageText %>") {
+      if (text === '<%= landingPageText %>') {
         done();
       } else {
-        done(new Error("Didn't find text: <%= landingPageText %>"));
+        done(new Error('Didnt find text: <%= landingPageText %>'));
       }
     }, function(err) {
       done(err);

@@ -4,15 +4,15 @@
 var nemoFactory = require('nemo-mocha-factory'),
   yreg = require('../lib/yreg'),
   plugins = require('../config/nemo-plugins'),
-  setup = {
-    "view": ['yhooreg']
-  };
+  nemo = {},
+  setup = {};
 
 describe('Nemo @yhooregSuite@', function() {
 
   nemoFactory({
     'plugins': plugins,
-    'setup': setup
+    'setup': setup,
+    'context': nemo
   });
 
   it('will @yhooregTest@', function(done) {
