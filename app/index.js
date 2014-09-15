@@ -17,6 +17,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
         this.installDependencies();
       }
     });
+
   },
 
   askFor: function() {
@@ -230,11 +231,26 @@ var NemoGenerator = yeoman.generators.Base.extend({
     // this.copy('_bower.json', 'bower.json');
   },
   installThings: function() {
+    var listening = false;
     var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
     var done = this.async();
     cmd.on('close', function(code) {
       console.log('child process exited with code ' + code);
       done();
+    });
+
+    cmd.on('error', function(err) {
+      console.log('child process exited with error ' + err);
+      done();
+    });
+    cmd.on('message', function() {
+      if (listening === false) {
+        listening = true;
+        cmd.stdout.on('data', function(data) {
+          console.log('Received data...');
+          console.log(data.toString('utf8'));
+        });
+      }
     });
   },
 
