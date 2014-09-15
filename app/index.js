@@ -188,7 +188,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       reportDir = baseDir + "/report",
       specDir = baseDir + "/spec",
       dataDir = baseDir + "/data",
-      libDir = baseDir + "/lib",
+      flowDir = baseDir + "/flow",
       browserOption = this.browserOption,
       taskDir = "tasks/";
     var done = this.async();
@@ -217,9 +217,9 @@ var NemoGenerator = yeoman.generators.Base.extend({
     //data dir
     //this.mkdir(dataDir);
     //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
-    //lib dir
-    this.mkdir(libDir);
-    this.copy('test/functional/lib/yreg.js', libDir + '/yreg.js');
+    //flow dir
+    this.mkdir(flowDir);
+    this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
     if (this.customSpec === "Yes") {
       this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
       this.template('test/functional/spec/_landing.js', specDir + '/landing.js');

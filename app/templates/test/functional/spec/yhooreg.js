@@ -2,7 +2,7 @@
 'use strict';
 
 var nemoFactory = require('nemo-mocha-factory'),
-  yreg = require('../lib/yreg'),
+  yreg = require('../flow/yreg'),
   plugins = require('../config/nemo-plugins'),
   nemo = {},
   setup = {};

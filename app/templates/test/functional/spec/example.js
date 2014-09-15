@@ -2,7 +2,7 @@
 'use strict';
 
 var nemoFactory = require('nemo-mocha-factory'),
-  lifeStory = require('../lib/lifeStory'),
+  lifeStory = require('../flow/lifeStory'),
   plugins = require('../config/nemo-plugins'),
   nemo = {},
   setup = {};
