@@ -40,6 +40,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
       message: 'Which desktop browser do you want to use by default?',
       default: "phantomjs",
       "choices": ["phantomjs", "firefox", "chrome", "safari"]
+    },{
+      type: 'list',
+      name: 'testFramework',
+      message: 'Which test framework would you like to use?',
+      default: "mocha",
+      "choices": ["mocha", "cucumberjs"]
     }, {
       type: 'input',
       name: 'seleniumJarPath',
@@ -149,37 +155,38 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.sauceSetup = props.sauceSetup;
       this.sauceUser = props.sauceUser;
       this.sauceKey = props.sauceKey;
+      this.testFramework = props.testFramework;
       this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       done();
     }.bind(this));
   },
   editGruntfile: function() {
-    var that = this;
-    var done = this.async();
+      var that = this;
+      var done = this.async();
 
-    //let's update Gruntfile.js if possible
-    fs.readFile('Gruntfile.js', 'utf8', function(err, data) {
+      //let's update Gruntfile.js if possible
+      fs.readFile('Gruntfile.js', 'utf8', function(err, data) {
 
-      if (err) {
-        return console.log(err);
-      }
-      if (data.match(/loopmocha/) !== null) {
-        //already here?
-        done();
-        return;
-      }
-      var replaceWith = 'grunt.registerTask(\'auto\', [\'loopmocha:local\']);';
-      replaceWith += (that.sauceSetup === "Yes") ? '\n    grunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
-      replaceWith += '\n    grunt.registerTask';
-      var result = data.replace(/grunt.registerTask/, replaceWith);
-
-      fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
         if (err) {
           return console.log(err);
         }
-        done();
+        if (data.match(/loopmocha/) !== null) {
+          //already here?
+          done();
+          return;
+        }
+        var replaceWith = 'grunt.registerTask(\'auto\', [\'loopmocha:local\']);';
+        replaceWith += (that.sauceSetup === "Yes") ? '\n    grunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
+        replaceWith += '\n    grunt.registerTask';
+        var result = data.replace(/grunt.registerTask/, replaceWith);
+
+        fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
+          if (err) {
+            return console.log(err);
+          }
+          done();
+        });
       });
-    });
   },
   app: function() {
     var baseDir = this.baseDirOption,
@@ -187,9 +194,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
       locatorDir = baseDir + "/locator",
       reportDir = baseDir + "/report",
       specDir = baseDir + "/spec",
+      featureDir = baseDir + "/features",
+      stepDefDir = featureDir + "/step_definitions",
       dataDir = baseDir + "/data",
       flowDir = baseDir + "/flow",
       browserOption = this.browserOption,
+      testFrameworkOption = this.testFramework,
       taskDir = "tasks/";
     var done = this.async();
     //base test directory
@@ -200,29 +210,58 @@ var NemoGenerator = yeoman.generators.Base.extend({
       var newval = "<%=" + val + "%>";
       return newval;
     };
-    this.template('_loopmocha.js', taskDir + 'loopmocha.js');
+    if(this.testFramework==='mocha'){
+      this.template('_loopmocha.js', taskDir + 'loopmocha.js');
+    } else if(this.testFramework==='cucumberjs'){
+      this.mkdir(baseDir + "/support");
+      this.template('_world.js', baseDir + "/support/" + 'world.js');
+      this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+    }
+
     //config dir
     this.mkdir(configDir);
     this.copy('test/functional/config/nemo-plugins.json', configDir + '/nemo-plugins.json');
     //locator dir
     this.mkdir(locatorDir);
-    this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
+
 
     //report dir
     this.mkdir(reportDir);
     this.copy('test/functional/report/README.md', reportDir + '/README.md');
-    //spec dir
-    this.mkdir(specDir);
-    this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
-    //data dir
-    //this.mkdir(dataDir);
-    //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
-    //flow dir
-    this.mkdir(flowDir);
-    this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+
+
+
+    if(this.testFramework==='cucumberjs') {
+      this.copy('test/functional/features/step_definitions/hooks.js',featureDir+'/step_definitions/hooks.js');
+      this.mkdir(featureDir);
+      this.mkdir(stepDefDir);
+    } else if(this.testFramework==='mocha') {
+      //spec dir
+      this.mkdir(specDir);
+    }
+
     if (this.customSpec === "Yes") {
       this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
-      this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
+      if(this.testFramework==='mocha') {
+        this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
+       } else if(this.testFramework==='cucumberjs'){
+        this.template('test/functional/features/landing.feature', featureDir+'/landing.feature');
+        this.copy('test/functional/features/step_definitions/landingStepDefs.js',featureDir+'/step_definitions/landingStepDefs.js');
+      }
+    } else {
+      //data dir
+      //this.mkdir(dataDir);
+      //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
+      //flow dir
+      this.mkdir(flowDir);
+      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
+      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+      if(this.testFramework==='mocha') {
+        this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
+      }else {
+        this.copy('test/functional/features/yahooreg.feature',featureDir+'/yahooreg.feature');
+        this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js',featureDir+'/step_definitions/yahooRegStepDefs.js');
+      }
     }
     done();
     // this.mkdir('app/templates');
@@ -231,8 +270,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
     // this.copy('_bower.json', 'bower.json');
   },
   installThings: function() {
-    var listening = false;
-    var cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4"]);
+    var listening = false,cmd;
+    if(this.testFramework==='mocha'){
+       cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4","grunt-config-dir@^0.3.2"]);
+    } else if(this.testFramework==='cucumberjs'){
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4","nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7","grunt-cucumberjs@^0.5.0","grunt-config-dir@^0.3.2"]);
+    }
     var done = this.async();
     cmd.on('close', function(code) {
       console.log('child process exited with code ' + code);
@@ -263,11 +306,15 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
       this.log(chalk.green("Please see"), chalk.underline.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
     }
-    var tryRunning = "Now try running 'grunt auto'";
-    tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
-    this.log(chalk.green(tryRunning));
+    if(this.testFramework==='mocha') {
+      var tryRunning = "Now try running 'grunt auto'";
+      tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
+      this.log(chalk.green(tryRunning));
+    } else if(this.testFramework==='cucumberjs'){
+      this.log(chalk.green("Now try running 'grunt cucumberjs'"));
+    }
     done();
-  },
+  }
 });
 
 module.exports = NemoGenerator;
