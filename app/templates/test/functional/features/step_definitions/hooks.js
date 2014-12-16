@@ -1,6 +1,3 @@
-/**
- * Created by nikulkarni on 11/2/14.
- */
 /*global describe:false, it:false, beforeEach:false, afterEach:false*/
 'use strict';
 
