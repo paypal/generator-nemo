@@ -28,7 +28,7 @@ describe('nemo generator', function () {
     });
   });
 
-  it('creates expected mocha tests that validate text on the app', function (done) {
+  it('creates expected cucumber tests to validate text on the app', function (done) {
     var base = testutil.makeBase('app');
     base.prompt.testFramework = 'cucumberjs';
     base.prompt.customSpec = 'Yes';

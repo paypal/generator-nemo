@@ -26,7 +26,7 @@ describe('nemo generator', function () {
     });
   });
 
-  it('creates expected mocha tests that validate text on the app', function (done) {
+  it('creates expected mocha tests to validate text on the app', function (done) {
     var base = testutil.makeBase('app');
     base.prompt.customSpec = 'Yes';
     testutil.run(base, function (err) {
