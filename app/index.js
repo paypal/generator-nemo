@@ -172,9 +172,9 @@ var NemoGenerator = yeoman.generators.Base.extend({
     var api = require('gruntfile-api'),
       gruntfileData = fs.readFileSync('Gruntfile.js'),
       output = api.init(gruntfileData);
-      output.registerTask('auto',['loopmocha:local']);
+      output.registerTask('auto',['loopmocha:local'],'overwrite');
       if(that.sauceSetup === "Yes"){
-        output.registerTask('auto:mobile',['loopmocha:sauce']);
+        output.registerTask('auto:mobile',['loopmocha:sauce'],'overwrite');
       }
      fs.writeFile('Gruntfile.js', output.toString(), 'utf8', function(err) {
        if (err) {
