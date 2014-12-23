@@ -161,32 +161,27 @@ var NemoGenerator = yeoman.generators.Base.extend({
     }.bind(this));
   },
   editGruntfile: function() {
-      var that = this;
-      var done = this.async();
-
-      //let's update Gruntfile.js if possible
-      fs.readFile('Gruntfile.js', 'utf8', function(err, data) {
-
-        if (err) {
-          return console.log(err);
-        }
-        if (data.match(/loopmocha/) !== null) {
-          //already here?
-          done();
-          return;
-        }
-        var replaceWith = 'grunt.registerTask(\'auto\', [\'loopmocha:local\']);';
-        replaceWith += (that.sauceSetup === "Yes") ? '\n    grunt.registerTask(\'auto:mobile\', [\'loopmocha:sauce\']);' : '';
-        replaceWith += '\n    grunt.registerTask';
-        var result = data.replace(/grunt.registerTask/, replaceWith);
-
-        fs.writeFile('Gruntfile.js', result, 'utf8', function(err) {
-          if (err) {
-            return console.log(err);
-          }
-          done();
-        });
-      });
+      var that = this,
+          done = this.async(),
+          exists = fs.existsSync('Gruntfile.js');
+      if (!exists) {
+        var gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
+        fs.writeFileSync('Gruntfile.js',gruntContent);
+      }
+    //let's update Gruntfile.js if possible
+    var api = require('gruntfile-api'),
+      gruntfileData = fs.readFileSync('Gruntfile.js'),
+      output = api.init(gruntfileData);
+      output.registerTask('auto',['loopmocha:local']);
+      if(that.sauceSetup === "Yes"){
+        output.registerTask('auto:mobile',['loopmocha:sauce']);
+      }
+     fs.writeFile('Gruntfile.js', output.toString(), 'utf8', function(err) {
+       if (err) {
+         return console.log(err);
+       }
+       done();
+     });
   },
   app: function() {
     var baseDir = this.baseDirOption,
@@ -274,7 +269,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     if(this.testFramework==='mocha'){
        cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4","grunt-config-dir@^0.3.2"]);
     } else if(this.testFramework==='cucumberjs'){
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4","nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7","grunt-cucumberjs@^0.5.0","grunt-config-dir@^0.3.2"]);
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4","nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7","grunt-cucumberjs@^v0.4.1","grunt-config-dir@^0.3.2"]);
     }
     var done = this.async();
     cmd.on('close', function(code) {
