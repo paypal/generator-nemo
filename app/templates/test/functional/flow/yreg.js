@@ -8,7 +8,7 @@ module.exports = function yreg(nemo) {
       yr.bmonthOptionValue('11');
       yr.bdayOptionValue('7');
       yr.byearOptionValue('1974');
-      yr.maleradio().click();
+      return yr.maleradio().click();
     }
   };
 };
