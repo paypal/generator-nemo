@@ -24,7 +24,7 @@ var SpecGenerator = yeoman.generators.NamedBase.extend({
 
     this.prompt(prompts, function(props) {
       this.baseDirOption = props.baseDirOption;
-      this.views = "'" + props.viewsOption.replace(",", "','") + "'";
+      this.views = "'" + props.viewsOption.replace(/,/g, "','") + "'";
       done();
     }.bind(this));
   },
