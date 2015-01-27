@@ -1,6 +1,6 @@
 {
   "name": "generator-nemo",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Yeoman generator",
   "license": "http://www.apache.org/licenses/LICENSE-2.0",
   "main": "app/index.js",
