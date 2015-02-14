@@ -214,7 +214,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
 
     //config dir
     this.mkdir(configDir);
-    this.copy('test/functional/config/nemo-plugins.json', configDir + '/nemo-plugins.json');
+    this.copy('test/functional/config/nemo.json', configDir + '/nemo.json');
     //locator dir
     this.mkdir(locatorDir);
 
