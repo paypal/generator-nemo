@@ -2,11 +2,10 @@
 'use strict';
 
 var nemoFactory = require('nemo-mocha-factory'),
-  plugins = require('../config/nemo-plugins'),
-  nemo = {},
-  setup = {
-    'view': ['landing']
-  };
+  config = require('../config/nemo'),
+  plugins = config,
+  setup = config.setup,
+  nemo = {};
 
 describe('Nemo @landingSuite@', function() {
 

@@ -1,7 +1,7 @@
 
 
 var Nemo = require('nemo'),
-  plugins = require('../config/nemo-plugins'),
+  plugins = require('../config/nemo'),
   config = {
     //"view": ['yhooreg'] //optionally add your json views here from locator folder
   },

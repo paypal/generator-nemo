@@ -12,5 +12,8 @@
       "module": "nemo-view",
       "register": true
     }
+  },
+  "setup": {
+    'view': ['landing']
   }
 }
