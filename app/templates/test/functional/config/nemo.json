@@ -14,6 +14,6 @@
     }
   },
   "setup": {
-    'view': ['landing']
+    "view": ["landing"]
   }
 }
