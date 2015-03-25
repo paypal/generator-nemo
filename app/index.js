@@ -34,7 +34,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       name: 'baseDirOption',
       message: 'What is the desired base directory for your tests, starting from your app root directory?',
       default: "test/functional"
-    }, {
+    },/* {
       type: 'list',
       name: 'browserOption',
       message: 'Which desktop browser do you want to use by default?',
@@ -142,21 +142,21 @@ var NemoGenerator = yeoman.generators.Base.extend({
       when: function (answers) {
         return (answers.sauceSetup === "Yes");
       }
-    }];
+    }*/];
 
     this.prompt(prompts, function (props) {
       this.baseDirOption = props.baseDirOption;
-      this.browserOption = props.browserOption;
-      this.seleniumJarPath = props.seleniumJarPath;
-      this.customSpec = props.customSpec;
-      this.targetBaseUrl = props.targetBaseUrl;
-      this.landingPageLocator = props.landingPageLocator;
-      this.landingPageText = props.landingPageText;
-      this.sauceSetup = props.sauceSetup;
-      this.sauceUser = props.sauceUser;
-      this.sauceKey = props.sauceKey;
-      this.testFramework = props.testFramework;
-      this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
+      //this.browserOption = props.browserOption;
+      //this.seleniumJarPath = props.seleniumJarPath;
+      //this.customSpec = props.customSpec;
+      //this.targetBaseUrl = props.targetBaseUrl;
+      //this.landingPageLocator = props.landingPageLocator;
+      //this.landingPageText = props.landingPageText;
+      //this.sauceSetup = props.sauceSetup;
+      //this.sauceUser = props.sauceUser;
+      //this.sauceKey = props.sauceKey;
+      //this.testFramework = props.testFramework;
+      //this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       done();
     }.bind(this));
   },
@@ -171,10 +171,10 @@ var NemoGenerator = yeoman.generators.Base.extend({
     //let's update Gruntfile.js if possible
     var gruntfileData = fs.readFileSync('Gruntfile.js'),
       output = gruntFileApi.init(gruntfileData);
-    output.registerTask('auto', ['loopmocha:local'], 'overwrite');
-    if (that.sauceSetup === "Yes") {
-      output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
-    }
+    output.registerTask('auto', ['loopmocha'], 'overwrite');
+    //if (that.sauceSetup === "Yes") {
+    //  output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
+    //}
     fs.writeFile('Gruntfile.js', output.toString(), 'utf8', function (err) {
       if (err) {
         return console.log(err);
@@ -184,6 +184,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
   },
   app: function () {
     var baseDir = this.baseDirOption,
+      utilDir = baseDir + "/util",
       configDir = baseDir + "/config",
       locatorDir = baseDir + "/locator",
       reportDir = baseDir + "/report",
@@ -204,58 +205,71 @@ var NemoGenerator = yeoman.generators.Base.extend({
       var newval = "<%=" + val + "%>";
       return newval;
     };
-    if (this.testFramework === 'mocha') {
+    //if (this.testFramework === 'mocha') {
       this.template('_loopmocha.js', taskDir + 'loopmocha.js');
-    } else if (this.testFramework === 'cucumberjs') {
-      this.mkdir(baseDir + "/support");
-      this.template('_world.js', baseDir + "/support/" + 'world.js');
-      this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
-    }
+    //} else if (this.testFramework === 'cucumberjs') {
+    //  this.mkdir(baseDir + "/support");
+    //  this.template('_world.js', baseDir + "/support/" + 'world.js');
+    //  this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+    //}
 
+    this.mkdir(utilDir);
+    this.copy('test/functional/util/index.js', utilDir + '/index.js');
     //config dir
     this.mkdir(configDir);
-    this.copy('test/functional/config/nemo.json', configDir + '/nemo.json');
+    this.copy('test/functional/config/config.json', configDir + '/config.json');
     //locator dir
     this.mkdir(locatorDir);
-
+    this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
+    this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
+    this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
+    this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
 
     //report dir
     this.mkdir(reportDir);
     this.copy('test/functional/report/README.md', reportDir + '/README.md');
 
 
-    if (this.testFramework === 'cucumberjs') {
-      this.copy('test/functional/features/step_definitions/hooks.js', featureDir + '/step_definitions/hooks.js');
-      this.mkdir(featureDir);
-      this.mkdir(stepDefDir);
-    } else if (this.testFramework === 'mocha') {
+    //if (this.testFramework === 'cucumberjs') {
+    //  this.copy('test/functional/features/step_definitions/hooks.js', featureDir + '/step_definitions/hooks.js');
+    //  this.mkdir(featureDir);
+    //  this.mkdir(stepDefDir);
+    //} else if (this.testFramework === 'mocha') {
       //spec dir
       this.mkdir(specDir);
-    }
-
-    if (this.customSpec === "Yes") {
-      this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
-      if (this.testFramework === 'mocha') {
-        this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
-      } else if (this.testFramework === 'cucumberjs') {
-        this.template('test/functional/features/landing.feature', featureDir + '/landing.feature');
-        this.copy('test/functional/features/step_definitions/landingStepDefs.js', featureDir + '/step_definitions/landingStepDefs.js');
-      }
-    } else {
+    //}
+    //copy specs
+    this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
+    this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
+    this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
+    //if (this.customSpec === "Yes") {
+    //  this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
+    //  if (this.testFramework === 'mocha') {
+    //    this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
+    //  } else if (this.testFramework === 'cucumberjs') {
+    //    this.template('test/functional/features/landing.feature', featureDir + '/landing.feature');
+    //    this.copy('test/functional/features/step_definitions/landingStepDefs.js', featureDir + '/step_definitions/landingStepDefs.js');
+    //  }
+    //} else {
       //data dir
       //this.mkdir(dataDir);
       //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
       //flow dir
       this.mkdir(flowDir);
-      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
-      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
-      if (this.testFramework === 'mocha') {
-        this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
-      } else {
-        this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
-        this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
-      }
-    }
+
+      //copy flows
+      this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
+      this.copy('test/functional/flow/card.js', flowDir + '/card.js');
+      this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
+      //this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
+      //this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+      //if (this.testFramework === 'mocha') {
+      //  this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
+      //} else {
+      //  this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
+      //  this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
+      //}
+    //}
     done();
     // this.mkdir('app/templates');
 
@@ -264,11 +278,11 @@ var NemoGenerator = yeoman.generators.Base.extend({
   },
   installThings: function () {
     var listening = false, cmd;
-    if (this.testFramework === 'mocha') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
-    } else if (this.testFramework === 'cucumberjs') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
-    }
+    //if (this.testFramework === 'mocha') {
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@v1.0.0-alpha.1", "nemo-view@v1.0.0-alpha.1", "grunt-loop-mocha@v1.0.0-alpha.7", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
+    //} else if (this.testFramework === 'cucumberjs') {
+    //  cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
+    //}
     var done = this.async();
     cmd.on('close', function (code) {
       console.log('child process exited with code ' + code);
@@ -294,18 +308,18 @@ var NemoGenerator = yeoman.generators.Base.extend({
     var done = this.async();
     var browser = this.browserOption;
     //if the browser is phantomjs or chrome, check for phantomjs or chromedriver
-    if (browser === "phantomjs" || browser === "chrome") {
-      var myBrowser = (browser === "phantomjs") ? ["PhantomJS", "PhantomJS"] : ["Chrome", "chromedriver"];
-      this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
-      this.log(chalk.green("Please see"), chalk.underline.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
-    }
-    if (this.testFramework === 'mocha') {
+    //if (browser === "phantomjs" || browser === "chrome") {
+    //  var myBrowser = (browser === "phantomjs") ? ["PhantomJS", "PhantomJS"] : ["Chrome", "chromedriver"];
+    //  this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
+    //  this.log(chalk.green("Please see"), chalk.underline.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
+    //}
+    //if (this.testFramework === 'mocha') {
       var tryRunning = "Now try running 'grunt auto'";
       tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
       this.log(chalk.green(tryRunning));
-    } else if (this.testFramework === 'cucumberjs') {
-      this.log(chalk.green("Now try running 'grunt cucumberjs'"));
-    }
+    //} else if (this.testFramework === 'cucumberjs') {
+    //  this.log(chalk.green("Now try running 'grunt cucumberjs'"));
+    //}
     done();
   }
 });

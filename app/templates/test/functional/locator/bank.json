@@ -1,0 +1,22 @@
+{
+  "number": {
+    "type": "css",
+    "locator": "#ban"
+  },
+  "routing": {
+    "type": "css",
+    "locator": "#brn"
+  },
+  "button": {
+    "type": "css",
+    "locator": "#babutton"
+  },
+  "success": {
+    "type": "css",
+    "locator": "p.result.good"
+  },
+  "failure": {
+    "type": "css",
+    "locator": "p.result.bad"
+  }
+}

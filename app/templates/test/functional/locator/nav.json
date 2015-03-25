@@ -1,0 +1,14 @@
+{
+  "cardLink": {
+    "type": "css",
+    "locator": "#addcclink"
+  },
+  "bankLink": {
+    "type": "css",
+    "locator": "#addbalink"
+  },
+  "logoutLink": {
+    "type": "css",
+    "locator": "#logoutlink"
+  }
+}
