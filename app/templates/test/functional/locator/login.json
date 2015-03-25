@@ -1,0 +1,22 @@
+{
+  "email": {
+    "type": "css",
+    "locator": "#email"
+  },
+  "password": {
+    "type": "css",
+    "locator": "#password"
+  },
+  "button": {
+    "type": "css",
+    "locator": "#loginbutton"
+  },
+  "success": {
+    "type": "css",
+    "locator": "p.result.good"
+  },
+  "failure": {
+    "type": "css",
+    "locator": "p.result.bad"
+  }
+}

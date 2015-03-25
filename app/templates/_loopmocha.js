@@ -9,64 +9,29 @@ module.exports = function loopmocha(grunt) {
   grunt.loadNpmTasks('grunt-loop-mocha');
   // Options
   return {
-    "src": ["<%= loscape('loopmocha.basedir') %>/spec/*.js"],
-    "basedir": process.cwd() + "/" + "<%= baseDirOption %>",
+    "src": ["<%= loscape('loopmocha.options.basedir') %>/spec/*.js"],
     "options": {
       "mocha": {
-        "reportLocation": grunt.option("reportLocation") || "<%= loscape('loopmocha.basedir') %>/report",
         "timeout": grunt.option("timeout") || 600000,
         "grep": grunt.option("grep") || 0,
         "debug": grunt.option("debug") || 0,
         "reporter": grunt.option("reporter") || "spec"
       },
-      "nemoData": {
-        "autoBaseDir": "<%= loscape('loopmocha.basedir') %>"
-        ,"targetBrowser": nconf.get("TARGET_BROWSER") || "<%= browserOption %>"
-        <% if (seleniumJarPath) { %>
-        ,"targetServer": nconf.get("TARGET_SERVER") || "localhost"
-        ,"seleniumJar": nconf.get("SELENIUM_JAR") || "<%= seleniumJarPath %>"
-        ,"serverProps": {
-          "port": 4444
+      "basedir": process.cwd() + "/" + "<%= baseDirOption %>",
+      "nemoBaseDir": "<%= loscape('loopmocha.options.basedir') %>",
+      "driver": {
+        "browser": "chrome"
+      },
+      "loop": {
+        "reportLocation": grunt.option("reportLocation") || "<%=loscape('loopmocha.options.basedir') %>/report",
+        "parallel": {
+          "type": "file"
         }
-        <% } %>
-        <% if (customSpec === "Yes") { %>
-        ,"targetBaseUrl": "<%= targetBaseUrl %>"
-        <% } %>
       },
       "iterations": [{
         "description": "default"
       }]
-    },
-    "local": {
-      "src": "<%= loscape('loopmocha.src') %>"
+
     }
-    <% if (sauceSetup === "Yes") { %>
-    ,"sauce": {
-      "src": "<%= loscape('loopmocha.src') %>",
-      "options": {
-        "nemoData": {
-          <% if (deployedUrl) { %>
-          "targetBaseUrl": "<%= deployedUrl %>",
-          <% } %>
-          "targetServer": "http://<%= sauceUser %>:<%= sauceKey %>@ondemand.saucelabs.com:80/wd/hub",
-          "serverCaps": {
-            "username": "<%= sauceUser %>",
-            "accessKey": "<%= sauceKey %>"
-          }
-        },
-        "iterations": [{
-          "description": "iphone",
-          "nemoData": {
-            "targetBrowser": "iphone"
-          }
-        }, {
-          "description": "android",
-          "nemoData": {
-            "targetBrowser": "android"
-          }
-        }]
-      }
-    }
-    <% } %>
   };
 };
