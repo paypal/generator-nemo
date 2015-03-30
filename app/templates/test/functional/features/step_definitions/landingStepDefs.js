@@ -6,7 +6,7 @@ module.exports= function landingStepDefs() {
   });
 
   this.Then(/^I see presence of text "([^"]*)"$/, function (text, callback) {
-    var landing = this.nemo.view.addView('landing');
+    var landing = this.nemo.view.landing;
     landing.pageVisible();
     landing.page().getText().then(function (actualText) {
       if (actualText === text) {
