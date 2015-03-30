@@ -1,0 +1,31 @@
+{
+  "plugins": {
+    "view": {
+      "module": "nemo-view",
+      "arguments": ["path:locator"]
+    }
+  },
+  "driver": {
+    "browser": "<%= browserOption %>"
+    <% if (sauceSetup === "Yes") { %>
+      ,"server": "http://<%= sauceUser %>:<%= sauceKey %>@ondemand.saucelabs.com:80/wd/hub"
+      ,"serverCaps":
+        {
+        "username": "<%= sauceUser %>",
+        "accessKey": "<%= sauceKey %>"
+        }
+
+  <% } %>
+
+
+  },
+  "data": {
+    "baseUrl": "https://fast-castle-8102.herokuapp.com"
+      <% if (deployedUrl) { %>
+      ,"targetBaseUrl": "<%= deployedUrl %>"
+      <% } %>
+      <% if (customSpec === "Yes") { %>
+      ,"targetBaseUrl": "<%= targetBaseUrl %>"
+      <% } %>
+  }
+}
