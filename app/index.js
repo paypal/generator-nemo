@@ -265,7 +265,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
   installThings: function () {
     var listening = false, cmd;
     if (this.testFramework === 'mocha') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@v1.0.0-alpha.1", "nemo-view@v1.0.0-alpha.1", "grunt-loop-mocha@v1.0.0-alpha.7", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@v1.0.0-alpha.1", "nemo-view@v1.0.0-alpha.1", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
     }
