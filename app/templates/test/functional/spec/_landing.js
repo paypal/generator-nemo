@@ -16,7 +16,7 @@ describe('Nemo @landingSuite@', function() {
   });
 
   it('will @loadAndVerifyLandingPage@', function(done) {
-    nemo.driver.get(nemo.data.targetBaseUrl);
+    nemo.driver.get(nemo.data.baseUrl);
     nemo.view.landing.pageVisible();
     nemo.view.landing.page().getText().then(function(text) {
       if (text === "<%= landingPageText %>") {

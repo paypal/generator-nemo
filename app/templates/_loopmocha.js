@@ -19,9 +19,6 @@ module.exports = function loopmocha(grunt) {
       },
       "basedir": process.cwd() + "/" + "<%= baseDirOption %>",
       "nemoBaseDir": "<%= loscape('loopmocha.options.basedir') %>",
-      "driver": {
-        "browser": "chrome"
-      },
       "loop": {
         "reportLocation": grunt.option("reportLocation") || "<%=loscape('loopmocha.options.basedir') %>/report",
         "parallel": {

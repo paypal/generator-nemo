@@ -47,98 +47,101 @@ var NemoGenerator = yeoman.generators.Base.extend({
       default: "mocha",
       "choices": ["mocha", "cucumberjs"]
     },
-      {
-        type: 'list',
-        name: 'customSpec',
-        choices: ['Yes', 'No'],
-        message: 'Would you like to add a custom spec for your application? It will test for presence of text on your landing page.'
-
-      }, {
-        type: 'input',
-        name: 'targetBaseUrl',
-        default: 'http://localhost:8000',
-        message: 'What is the URL of your application landing page (where your first test should start)?',
-        when: function (answers) {
-          return (answers.customSpec === "Yes");
-        }
-      }, {
-        type: 'input',
-        name: 'landingPageLocator',
-        default: '#wrapper h1',
-        message: 'What CSS selctor will select distinct text on your landing page?',
-        validate: function (landingPageSelector) {
-          if (landingPageSelector !== "") {
-            return true;
-          }
-          return "You need to add a CSS selector for your test to use.";
-        },
-        when: function (answers) {
-          return (answers.customSpec === "Yes");
-        }
-      }, {
-        type: 'input',
-        name: 'landingPageText',
-        default: 'Hello, index!',
-        message: 'What text should appear on your application\'s landing page within the locator provided above?',
-        validate: function (homePageText) {
-          if (homePageText !== "") {
-            return true;
-          }
-          return "You need to add some text for your first test to check.";
-        },
-        when: function (answers) {
-          return (answers.customSpec === "Yes");
-        }
-      }, {
-        type: 'input',
-        name: 'deployedUrl',
-        message: 'What is your deployed application landing page URL (if different from your already supplied URL)',
-        when: function (answers) {
-          return (answers.customSpec === "Yes");
-        }
-      }, {
-        type: 'list',
-        name: 'sauceSetup',
-        choices: ['Yes', 'No'],
-        message: 'Would you like to set up SauceLabs to test on mobile browsers?'
-      }, {
-        type: 'input',
-        name: 'sauceUser',
-        message: 'What is your SauceLabs username?',
-        validate: function (username) {
-          if (username !== "") {
-            return true;
-          }
-          return "You need to provide a username.";
-        },
-        when: function (answers) {
-          return (answers.sauceSetup === "Yes");
-        }
-      }, {
-        type: 'input',
-        name: 'sauceKey',
-        message: 'What is your SauceLabs access key?',
-        validate: function (key) {
-          if (key !== "") {
-            return true;
-          }
-          return "You need to provide an access key.";
-        },
-        when: function (answers) {
-          return (answers.sauceSetup === "Yes");
-        }
-      }];
+      //{
+      //  type: 'list',
+      //  name: 'customSpec',
+      //  choices: ['Yes', 'No'],
+      //  message: 'Would you like to add a custom spec for your application? It will test for presence of text on your landing page.'
+      //
+      //},
+      //{
+      //  type: 'input',
+      //  name: 'targetBaseUrl',
+      //  default: 'http://localhost:8000',
+      //  message: 'What is the URL of your application landing page (where your first test should start)?',
+      //  when: function (answers) {
+      //    return (answers.customSpec === "Yes");
+      //  }
+      //},
+      //{
+      //  type: 'input',
+      //  name: 'landingPageLocator',
+      //  default: '#wrapper h1',
+      //  message: 'What CSS selctor will select distinct text on your landing page?',
+      //  validate: function (landingPageSelector) {
+      //    if (landingPageSelector !== "") {
+      //      return true;
+      //    }
+      //    return "You need to add a CSS selector for your test to use.";
+      //  },
+      //  when: function (answers) {
+      //    return (answers.customSpec === "Yes");
+      //  }
+      //}, {
+      //  type: 'input',
+      //  name: 'landingPageText',
+      //  default: 'Hello, index!',
+      //  message: 'What text should appear on your application\'s landing page within the locator provided above?',
+      //  validate: function (homePageText) {
+      //    if (homePageText !== "") {
+      //      return true;
+      //    }
+      //    return "You need to add some text for your first test to check.";
+      //  },
+      //  when: function (answers) {
+      //    return (answers.customSpec === "Yes");
+      //  }
+      //}, {
+      //  type: 'input',
+      //  name: 'deployedUrl',
+      //  message: 'What is your deployed application landing page URL (if different from your already supplied URL)',
+      //  when: function (answers) {
+      //    return (answers.customSpec === "Yes");
+      //  }
+      //}, {
+      //  type: 'list',
+      //  name: 'sauceSetup',
+      //  choices: ['Yes', 'No'],
+      //  message: 'Would you like to set up SauceLabs to test on mobile browsers?'
+      //}, {
+      //  type: 'input',
+      //  name: 'sauceUser',
+      //  message: 'What is your SauceLabs username?',
+      //  validate: function (username) {
+      //    if (username !== "") {
+      //      return true;
+      //    }
+      //    return "You need to provide a username.";
+      //  },
+      //  when: function (answers) {
+      //    return (answers.sauceSetup === "Yes");
+      //  }
+      //}, {
+      //  type: 'input',
+      //  name: 'sauceKey',
+      //  message: 'What is your SauceLabs access key?',
+      //  validate: function (key) {
+      //    if (key !== "") {
+      //      return true;
+      //    }
+      //    return "You need to provide an access key.";
+      //  },
+      //  when: function (answers) {
+      //    return (answers.sauceSetup === "Yes");
+      //  }
+      //}
+    ];
 
     this.prompt(prompts, function (props) {
       this.baseDirOption = props.baseDirOption;
       this.browserOption = props.browserOption;
-      this.customSpec = props.customSpec;
-      this.targetBaseUrl = props.targetBaseUrl;
-      this.landingPageLocator = props.landingPageLocator;
-      this.landingPageText = props.landingPageText;
-      this.sauceSetup = props.sauceSetup;
-      this.sauceUser = props.sauceUser;
-      this.sauceKey = props.sauceKey;
+      //this.customSpec = props.customSpec;
+      //this.targetBaseUrl = props.targetBaseUrl;
+      //this.landingPageLocator = props.landingPageLocator;
+      //this.landingPageText = props.landingPageText;
+      //this.sauceSetup = props.sauceSetup;
+      //this.sauceUser = props.sauceUser;
+      //this.sauceKey = props.sauceKey;
       this.testFramework = props.testFramework;
       this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       done();
@@ -200,7 +203,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
 
     //config dir
     this.mkdir(configDir);
-    this.template('_config.json', configDir + '/config.json');
+    this.copy('test/functional/config/config.json', configDir + '/config.json');
     //locator dir
     this.mkdir(locatorDir);
 
@@ -218,15 +221,15 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.copy('test/functional/util/index.js', utilDir + '/index.js');
     }
 
-    if (this.customSpec === "Yes") {
-      this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
-      if (this.testFramework === 'mocha') {
-        this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
-      } else if (this.testFramework === 'cucumberjs') {
-        this.template('test/functional/features/landing.feature', featureDir + '/landing.feature');
-        this.copy('test/functional/features/step_definitions/landingStepDefs.js', featureDir + '/step_definitions/landingStepDefs.js');
-      }
-    } else {
+    //if (this.customSpec === "Yes") {
+    //  this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
+    //  if (this.testFramework === 'mocha') {
+    //    this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
+    //  } else if (this.testFramework === 'cucumberjs') {
+    //    this.template('test/functional/features/landing.feature', featureDir + '/landing.feature');
+    //    this.copy('test/functional/features/step_definitions/landingStepDefs.js', featureDir + '/step_definitions/landingStepDefs.js');
+    //  }
+    //} else {
       //data dir
       //this.mkdir(dataDir);
       //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
@@ -255,7 +258,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
         this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
         this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
       }
-    }
+    //}
     done();
     this.mkdir('app/templates');
 
