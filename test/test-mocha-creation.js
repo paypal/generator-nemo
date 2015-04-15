@@ -2,6 +2,8 @@
 
 'use strict';
 var helpers = require('yeoman-generator').test;
+var assert = require('assert');
+var path = require('path');
 var testutil = require('./util');
 
 describe('nemo generator', function () {
@@ -14,51 +16,24 @@ describe('nemo generator', function () {
     testutil.run(base, function (err) {
       var expected = [
         'tasks/loopmocha.js',
-        'test/functional/config/nemo-plugins.json',
-        'test/functional/locator/yhooreg.json',
-        'test/functional/flow/yreg.js',
-        'test/functional/spec/yhooreg.js',
+        'test/functional/config/config.json',
+        'test/functional/locator/bank.json',
+        'test/functional/locator/card.json',
+        'test/functional/locator/login.json',
+        'test/functional/locator/nav.json',
+        'test/functional/flow/bank.js',
+        'test/functional/flow/card.js',
+        'test/functional/flow/navigate.js',
+        'test/functional/spec/flow-spec.js',
+        'test/functional/spec/generic-spec.js',
+        'test/functional/spec/view-spec.js',
         'Gruntfile.js'
       ];
       helpers.assertFile(expected);
       testutil.assertGruntTasks(['auto']);
+      assert(require(path.resolve(__dirname, '../temp/test/functional/config/config')).driver.browser === 'phantomjs');
       done(err);
     });
   });
 
-  it('creates expected mocha tests to validate text on the app', function (done) {
-    var base = testutil.makeBase('app');
-    base.prompt.customSpec = 'Yes';
-    testutil.run(base, function (err) {
-      var expected = [
-        'tasks/loopmocha.js',
-        'test/functional/config/nemo-plugins.json',
-        'test/functional/locator/landing.json',
-        'test/functional/spec/landing.js',
-        'Gruntfile.js'
-      ];
-      helpers.assertFile(expected);
-      testutil.assertGruntTasks(['auto']);
-      done(err);
-    });
-  });
-  it('creates expected mocha tests with custom validation and sauce setup', function (done) {
-    var base = testutil.makeBase('app');
-    base.prompt.customSpec = 'Yes';
-    base.prompt.sauceSetup = 'Yes';
-    base.prompt.sauceUser = 'user';
-    base.prompt.sauceKey = 'key';
-    testutil.run(base, function (err) {
-      var expected = [
-        'tasks/loopmocha.js',
-        'test/functional/config/nemo-plugins.json',
-        'test/functional/locator/landing.json',
-        'test/functional/spec/landing.js',
-        'Gruntfile.js'
-      ];
-      helpers.assertFile(expected);
-      testutil.assertGruntTasks(['auto', 'auto:mobile']);
-      done(err);
-    });
-  });
 });
