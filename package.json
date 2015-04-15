@@ -1,6 +1,6 @@
 {
   "name": "generator-nemo",
-  "version": "0.2.2",
+  "version": "1.0.2",
   "description": "Yeoman generator",
   "license": "http://www.apache.org/licenses/LICENSE-2.0",
   "main": "app/index.js",
@@ -13,6 +13,12 @@
     "email": "mattedelman@gmail.com",
     "url": "https://github.com/grawk"
   },
+  "contributors": [
+    {
+      "name": "Nilesh Kulkarni",
+      "email": "nilesh.cric@gmail.com"
+    }
+  ],
   "engines": {
     "node": ">=0.10.0"
   },
@@ -23,12 +29,22 @@
     "yeoman-generator"
   ],
   "dependencies": {
-    "chalk": "~0.4.0",
+    "chalk": "~1.0.0",
     "gruntfile-api": "0.0.9",
     "yeoman-generator": "~0.16.0"
   },
   "devDependencies": {
-    "mocha": "*"
+    "cucumber": "^0.4.8",
+    "grunt": "^0.4.5",
+    "grunt-config-dir": "^0.3.2",
+    "grunt-cucumberjs": "^0.5.2",
+    "grunt-loop-mocha": "^1.0.0",
+    "mocha": "*",
+    "nconf": "^0.6.9",
+    "nemo": "^1.0.4",
+    "nemo-view": "^1.0.3",
+    "path": "^0.11.14",
+    "xunit-file": "0.0.4"
   },
   "peerDependencies": {
     "yo": ">=1.0.0"

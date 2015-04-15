@@ -2,16 +2,17 @@
 'use strict';
 
 var nemoFactory = require('nemo-mocha-factory'),
-  plugins = require('../config/nemo-plugins'),
-  setup = {
-    "view": [<%= views %>]
-  };
+  config = require('../config/nemo'),
+  plugins = config,
+  setup = config.setup,
+  nemo = {};
 
 describe('Nemo @<%= name %>Suite@', function() {
 
   nemoFactory({
     'plugins': plugins,
-    'setup': setup
+    'setup': setup,
+    'context': nemo
   });
 
   it('will @<%= name %>Test@', function(done) {

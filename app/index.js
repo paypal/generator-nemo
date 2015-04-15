@@ -46,115 +46,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
       message: 'Which test framework would you like to use?',
       default: "mocha",
       "choices": ["mocha", "cucumberjs"]
-    }, {
-      type: 'input',
-      name: 'seleniumJarPath',
-      message: 'Where is your selenium standalone Jar file? (Windows user? Provide windows style path)',
-      default: '/usr/local/bin/selenium-server-standalone.jar',
-      when: function (answers) {
-        var bo = answers.browserOption;
-        return (bo === "firefox" || bo === "safari");
-      },
-      validate: function (jarPath) {
-        var exists = fs.existsSync(jarPath);
-        if (!exists) {
-          return "Please make sure you've got a valid selenium standalone jar path specified! Please see https://github.com/paypal/nemo-docs/blob/master/driver-setup.md for more details.";
-        }
-        return true;
-      }
-    }, {
-      type: 'list',
-      name: 'customSpec',
-      choices: ['Yes', 'No'],
-      message: 'Would you like to add a custom spec for your application? It will test for presence of text on your landing page.'
-
-    }, {
-      type: 'input',
-      name: 'targetBaseUrl',
-      default: 'http://localhost:8000',
-      message: 'What is the URL of your application landing page (where your first test should start)?',
-      when: function (answers) {
-        return (answers.customSpec === "Yes");
-      }
-    }, {
-      type: 'input',
-      name: 'landingPageLocator',
-      default: '#wrapper h1',
-      message: 'What CSS selctor will select distinct text on your landing page?',
-      validate: function (landingPageSelector) {
-        if (landingPageSelector !== "") {
-          return true;
-        }
-        return "You need to add a CSS selector for your test to use.";
-      },
-      when: function (answers) {
-        return (answers.customSpec === "Yes");
-      }
-    }, {
-      type: 'input',
-      name: 'landingPageText',
-      default: 'Hello, index!',
-      message: 'What text should appear on your application\'s landing page within the locator provided above?',
-      validate: function (homePageText) {
-        if (homePageText !== "") {
-          return true;
-        }
-        return "You need to add some text for your first test to check.";
-      },
-      when: function (answers) {
-        return (answers.customSpec === "Yes");
-      }
-    }, {
-      type: 'input',
-      name: 'deployedUrl',
-      message: 'What is your deployed application landing page URL (if different from your already supplied URL)',
-      when: function (answers) {
-        return (answers.customSpec === "Yes");
-      }
-    }, {
-      type: 'list',
-      name: 'sauceSetup',
-      choices: ['Yes', 'No'],
-      message: 'Would you like to set up SauceLabs to test on mobile browsers?'
-    }, {
-      type: 'input',
-      name: 'sauceUser',
-      message: 'What is your SauceLabs username?',
-      validate: function (username) {
-        if (username !== "") {
-          return true;
-        }
-        return "You need to provide a username.";
-      },
-      when: function (answers) {
-        return (answers.sauceSetup === "Yes");
-      }
-    }, {
-      type: 'input',
-      name: 'sauceKey',
-      message: 'What is your SauceLabs access key?',
-      validate: function (key) {
-        if (key !== "") {
-          return true;
-        }
-        return "You need to provide an access key.";
-      },
-      when: function (answers) {
-        return (answers.sauceSetup === "Yes");
-      }
-    }];
+    }
+    ];
 
     this.prompt(prompts, function (props) {
       this.baseDirOption = props.baseDirOption;
       this.browserOption = props.browserOption;
-      this.seleniumJarPath = props.seleniumJarPath;
-      this.customSpec = props.customSpec;
-      this.targetBaseUrl = props.targetBaseUrl;
-      this.landingPageLocator = props.landingPageLocator;
-      this.landingPageText = props.landingPageText;
-      this.sauceSetup = props.sauceSetup;
-      this.sauceUser = props.sauceUser;
-      this.sauceKey = props.sauceKey;
       this.testFramework = props.testFramework;
       this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       done();
@@ -171,7 +68,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     //let's update Gruntfile.js if possible
     var gruntfileData = fs.readFileSync('Gruntfile.js'),
       output = gruntFileApi.init(gruntfileData);
-    output.registerTask('auto', ['loopmocha:local'], 'overwrite');
+    output.registerTask('auto', ['loopmocha'], 'overwrite');
     if (that.sauceSetup === "Yes") {
       output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
     }
@@ -184,16 +81,14 @@ var NemoGenerator = yeoman.generators.Base.extend({
   },
   app: function () {
     var baseDir = this.baseDirOption,
+      utilDir = baseDir + "/util",
       configDir = baseDir + "/config",
       locatorDir = baseDir + "/locator",
       reportDir = baseDir + "/report",
       specDir = baseDir + "/spec",
       featureDir = baseDir + "/features",
       stepDefDir = featureDir + "/step_definitions",
-      dataDir = baseDir + "/data",
       flowDir = baseDir + "/flow",
-      browserOption = this.browserOption,
-      testFrameworkOption = this.testFramework,
       taskDir = "tasks/";
     var done = this.async();
     //base test directory
@@ -212,12 +107,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
     }
 
+
     //config dir
     this.mkdir(configDir);
-    this.copy('test/functional/config/nemo-plugins.json', configDir + '/nemo-plugins.json');
+    this.template('_config.json', configDir + '/config.json');
     //locator dir
     this.mkdir(locatorDir);
-
 
     //report dir
     this.mkdir(reportDir);
@@ -229,45 +124,47 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.mkdir(featureDir);
       this.mkdir(stepDefDir);
     } else if (this.testFramework === 'mocha') {
-      //spec dir
-      this.mkdir(specDir);
+      this.mkdir(utilDir);
+      this.copy('test/functional/util/index.js', utilDir + '/index.js');
     }
-
-    if (this.customSpec === "Yes") {
-      this.template('test/functional/locator/_landing.json', locatorDir + '/landing.json');
-      if (this.testFramework === 'mocha') {
-        this.template('test/functional/spec/_landing.js', specDir + '/landing.js');
-      } else if (this.testFramework === 'cucumberjs') {
-        this.template('test/functional/features/landing.feature', featureDir + '/landing.feature');
-        this.copy('test/functional/features/step_definitions/landingStepDefs.js', featureDir + '/step_definitions/landingStepDefs.js');
-      }
-    } else {
-      //data dir
-      //this.mkdir(dataDir);
-      //this.template('test/functional/data/_setup.js', dataDir + '/setup.js');
-      //flow dir
+     //flow dir
       this.mkdir(flowDir);
-      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
-      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+
+      //copy flows
+
       if (this.testFramework === 'mocha') {
-        this.copy('test/functional/spec/yhooreg.js', specDir + '/yhooreg.js');
-      } else {
+        this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
+        this.copy('test/functional/flow/card.js', flowDir + '/card.js');
+        this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
+        //spec dir
+        this.mkdir(specDir);
+        this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
+        this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
+        this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
+        this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
+        //copy specs
+        this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
+        this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
+        this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
+      } else if (this.testFramework === 'cucumberjs') {
         this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
         this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
+        this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
+        this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
       }
-    }
+    //}
     done();
-    // this.mkdir('app/templates');
+    this.mkdir('app/templates');
 
-    // this.copy('_package.json', 'package.json');
-    // this.copy('_bower.json', 'bower.json');
+    //this.copy('_package.json', 'package.json');
+    //this.copy('_bower.json', 'bower.json');
   },
   installThings: function () {
     var listening = false, cmd;
     if (this.testFramework === 'mocha') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-mocha-factory@^v0.2.0", "grunt-loop-mocha@^v0.3.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v0.2.0", "nemo-view@^v0.2.0", "nemo-drivex@^v0.1.0", "nemo-locatex@^v0.1.0", "nconf@~v0.6.7", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@v1.0.0-alpha.1", "nemo-view@v1.0.0-alpha.1", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
     }
     var done = this.async();
     cmd.on('close', function (code) {
@@ -293,12 +190,6 @@ var NemoGenerator = yeoman.generators.Base.extend({
   finalValidation: function () {
     var done = this.async();
     var browser = this.browserOption;
-    //if the browser is phantomjs or chrome, check for phantomjs or chromedriver
-    if (browser === "phantomjs" || browser === "chrome") {
-      var myBrowser = (browser === "phantomjs") ? ["PhantomJS", "PhantomJS"] : ["Chrome", "chromedriver"];
-      this.log(chalk.green("You selected " + myBrowser[0] + " as your browser. If you haven't already, please install " + myBrowser[1] + " to run tests locally."));
-      this.log(chalk.green("Please see"), chalk.underline.bold("https://github.com/paypal/nemo-docs/blob/master/driver-setup.md"), chalk.green("for more details."));
-    }
     if (this.testFramework === 'mocha') {
       var tryRunning = "Now try running 'grunt auto'";
       tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";

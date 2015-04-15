@@ -1,0 +1,17 @@
+{
+  "plugins": {
+    "view": {
+      "module": "nemo-view",
+      "arguments": ["path:locator"]
+    }
+  },
+  "driver": {
+    "browser": "<%= browserOption %>"
+
+
+  },
+  "data": {
+    "baseUrl": "https://fast-castle-8102.herokuapp.com"
+
+  }
+}

@@ -19,10 +19,7 @@ module.exports = function makeBase(generator) {
     prompt: {
       'testFramework': 'mocha',
       'baseDirOption': 'test/functional',
-      'browserOption': 'phantomjs',
-      'seleniumJarPath': '/usr/local/bin/selenium-server-standalone.jar',
-      'customSpec': 'No',
-      'sauceSetup': 'No'
+      'browserOption': 'phantomjs'
     }
   });
 };

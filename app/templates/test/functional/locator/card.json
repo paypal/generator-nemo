@@ -1,0 +1,22 @@
+{
+  "number": {
+    "type": "css",
+    "locator": "#cc"
+  },
+  "type": {
+    "type": "css",
+    "locator": "#type"
+  },
+  "button": {
+    "type": "css",
+    "locator": "#ccbutton"
+  },
+  "success": {
+    "type": "css",
+    "locator": "p.result.good"
+  },
+  "failure": {
+    "type": "css",
+    "locator": "p.result.bad"
+  }
+}
