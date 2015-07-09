@@ -1,6 +1,7 @@
 /*global nemo:true, describe:true, it:true */
 var Nemo = require('nemo');
 var nemo = {};
+var util = require('../util');
 
 describe('@view@', function () {
   before(function (done) {
@@ -13,6 +14,7 @@ describe('@view@', function () {
 
     //login
     nemo.driver.get(nemo.data.baseUrl);
+    util.waitForJSReady(nemo);
     nemo.view.login.emailWaitVisible().sendKeys('me@mine.com');
     nemo.view.login.password().sendKeys('11111111');
     nemo.view.login.button().click();
