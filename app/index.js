@@ -127,31 +127,31 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.mkdir(utilDir);
       this.copy('test/functional/util/index.js', utilDir + '/index.js');
     }
-     //flow dir
-      this.mkdir(flowDir);
+    //flow dir
+    this.mkdir(flowDir);
 
-      //copy flows
+    //copy flows
 
-      if (this.testFramework === 'mocha') {
-        this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
-        this.copy('test/functional/flow/card.js', flowDir + '/card.js');
-        this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
-        //spec dir
-        this.mkdir(specDir);
-        this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
-        this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
-        this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
-        this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
-        //copy specs
-        this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
-        this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
-        this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
-      } else if (this.testFramework === 'cucumberjs') {
-        this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
-        this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
-        this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
-        this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
-      }
+    if (this.testFramework === 'mocha') {
+      this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
+      this.copy('test/functional/flow/card.js', flowDir + '/card.js');
+      this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
+      //spec dir
+      this.mkdir(specDir);
+      this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
+      this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
+      this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
+      this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
+      //copy specs
+      this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
+      this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
+      this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
+    } else if (this.testFramework === 'cucumberjs') {
+      this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
+      this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
+      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
+      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+    }
     //}
     done();
     this.mkdir('app/templates');
@@ -164,7 +164,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     if (this.testFramework === 'mocha') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@v1.0.0-alpha.1", "nemo-view@v1.0.0-alpha.1", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
+      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
     }
     var done = this.async();
     cmd.on('close', function (code) {

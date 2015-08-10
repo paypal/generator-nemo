@@ -1,6 +1,7 @@
 /*global nemo:true, describe:true, it:true */
 var Nemo = require('nemo');
 var nemo = {};
+var util = require('../util');
 
 describe('@generic@', function () {
   before(function (done) {
@@ -12,6 +13,7 @@ describe('@generic@', function () {
   it('should execute high level functionality using generic methods', function (done) {
     //login
     nemo.driver.get(nemo.data.baseUrl);
+    util.waitForJSReady(nemo);
     nemo.view._waitVisible('#email');
     nemo.view._find('#email').sendKeys('me@mine.com');
     nemo.view._find('#password').sendKeys('11111111');

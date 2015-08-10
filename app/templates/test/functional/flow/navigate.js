@@ -1,9 +1,11 @@
+var util = require('../util');
 var Navigate = function (nemo) {
   this.nemo = nemo;
 };
 
 var _enterLoginForm = function (nemo, user, pass) {
   nemo.driver.get(nemo.data.baseUrl);
+  util.waitForJSReady(nemo);
   nemo.view.login.emailWaitVisible().sendKeys(user);
   nemo.view.login.password().sendKeys(pass);
   return nemo.view.login.button().click();
