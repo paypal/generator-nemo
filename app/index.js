@@ -2,10 +2,9 @@
 var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
-var banner = require('./lib/banner');
+var nemoBanner = require('./lib/banner');
 var chalk = require('chalk');
 var fs = require('fs');
-//var _ = require('lodash');
 var gruntFileApi = require('gruntfile-api');
 
 var NemoGenerator = yeoman.generators.Base.extend({
@@ -23,30 +22,27 @@ var NemoGenerator = yeoman.generators.Base.extend({
   askFor: function () {
     var done = this.async();
 
-    //Nemo banner
-    banner();
+    nemoBanner();
 
-    // replace it with a short and sweet description of your generator
-    //this.log(chalk.magenta('You\'re using the fantastic Nemo generator.'));
-
-    var prompts = [{
-      type: 'input',
-      name: 'baseDirOption',
-      message: 'What is the desired base directory for your tests, starting from your app root directory?',
-      default: "test/functional"
-    }, {
-      type: 'list',
-      name: 'browserOption',
-      message: 'Which desktop browser do you want to use by default?',
-      default: "phantomjs",
-      "choices": ["phantomjs", "firefox", "chrome", "safari"]
-    }, {
-      type: 'list',
-      name: 'testFramework',
-      message: 'Which test framework would you like to use?',
-      default: "mocha",
-      "choices": ["mocha", "cucumberjs"]
-    }
+    var prompts = [
+      {
+        type: 'input',
+        name: 'baseDirOption',
+        message: 'What is the desired base directory for your tests, starting from your app root directory?',
+        default: "test/functional"
+      }, {
+        type: 'list',
+        name: 'browserOption',
+        message: 'Which desktop browser do you want to use by default?',
+        default: "phantomjs",
+        "choices": ["phantomjs", "firefox", "chrome", "safari"]
+      }, {
+        type: 'list',
+        name: 'testFramework',
+        message: 'Which test framework would you like to use?',
+        default: "mocha",
+        "choices": ["mocha", "cucumberjs"]
+      }
     ];
 
     this.prompt(prompts, function (props) {
@@ -58,16 +54,16 @@ var NemoGenerator = yeoman.generators.Base.extend({
     }.bind(this));
   },
   editGruntfile: function () {
-    var that = this,
-      done = this.async(),
-      exists = fs.existsSync('Gruntfile.js');
+    var that = this;
+    var done = this.async();
+    var exists = fs.existsSync('Gruntfile.js');
     if (!exists) {
       var gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
       fs.writeFileSync('Gruntfile.js', gruntContent);
     }
     //let's update Gruntfile.js if possible
-    var gruntfileData = fs.readFileSync('Gruntfile.js'),
-      output = gruntFileApi.init(gruntfileData);
+    var gruntfileData = fs.readFileSync('Gruntfile.js');
+    var output = gruntFileApi.init(gruntfileData);
     output.registerTask('auto', ['loopmocha'], 'overwrite');
     if (that.sauceSetup === "Yes") {
       output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
@@ -80,16 +76,16 @@ var NemoGenerator = yeoman.generators.Base.extend({
     });
   },
   app: function () {
-    var baseDir = this.baseDirOption,
-      utilDir = baseDir + "/util",
-      configDir = baseDir + "/config",
-      locatorDir = baseDir + "/locator",
-      reportDir = baseDir + "/report",
-      specDir = baseDir + "/spec",
-      featureDir = baseDir + "/features",
-      stepDefDir = featureDir + "/step_definitions",
-      flowDir = baseDir + "/flow",
-      taskDir = "tasks/";
+    var baseDir = this.baseDirOption;
+    var utilDir = baseDir + "/util";
+    var configDir = baseDir + "/config";
+    var locatorDir = baseDir + "/locator";
+    var reportDir = baseDir + "/report";
+    var specDir = baseDir + "/spec";
+    var featureDir = baseDir + "/features";
+    var stepDefDir = featureDir + "/step_definitions";
+    var flowDir = baseDir + "/flow";
+    var taskDir = "tasks/";
     var done = this.async();
     //base test directory
     this.mkdir(baseDir);
@@ -160,7 +156,8 @@ var NemoGenerator = yeoman.generators.Base.extend({
     //this.copy('_bower.json', 'bower.json');
   },
   installThings: function () {
-    var listening = false, cmd;
+    var listening = false;
+    var cmd;
     if (this.testFramework === 'mocha') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
