@@ -2,10 +2,9 @@
 var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
-var banner = require('./lib/banner');
+var nemoBanner = require('./lib/banner');
 var chalk = require('chalk');
 var fs = require('fs');
-//var _ = require('lodash');
 var gruntFileApi = require('gruntfile-api');
 
 var NemoGenerator = yeoman.generators.Base.extend({
@@ -21,32 +20,30 @@ var NemoGenerator = yeoman.generators.Base.extend({
   },
 
   askFor: function () {
+    var prompts;
     var done = this.async();
 
-    //Nemo banner
-    banner();
+    nemoBanner();
 
-    // replace it with a short and sweet description of your generator
-    //this.log(chalk.magenta('You\'re using the fantastic Nemo generator.'));
-
-    var prompts = [{
-      type: 'input',
-      name: 'baseDirOption',
-      message: 'What is the desired base directory for your tests, starting from your app root directory?',
-      default: "test/functional"
-    }, {
-      type: 'list',
-      name: 'browserOption',
-      message: 'Which desktop browser do you want to use by default?',
-      default: "phantomjs",
-      "choices": ["phantomjs", "firefox", "chrome", "safari"]
-    }, {
-      type: 'list',
-      name: 'testFramework',
-      message: 'Which test framework would you like to use?',
-      default: "mocha",
-      "choices": ["mocha", "cucumberjs"]
-    }
+    prompts = [
+      {
+        type: 'input',
+        name: 'baseDirOption',
+        message: 'What is the desired base directory for your tests, starting from your app root directory?',
+        default: "test/functional"
+      }, {
+        type: 'list',
+        name: 'browserOption',
+        message: 'Which desktop browser do you want to use by default?',
+        default: "phantomjs",
+        "choices": ["phantomjs", "firefox", "chrome", "safari"]
+      }, {
+        type: 'list',
+        name: 'testFramework',
+        message: 'Which test framework would you like to use?',
+        default: "mocha",
+        "choices": ["mocha", "cucumberjs"]
+      }
     ];
 
     this.prompt(prompts, function (props) {
@@ -57,17 +54,21 @@ var NemoGenerator = yeoman.generators.Base.extend({
       done();
     }.bind(this));
   },
+
   editGruntfile: function () {
-    var that = this,
-      done = this.async(),
-      exists = fs.existsSync('Gruntfile.js');
+    var that = this;
+    var done = this.async();
+    var exists = fs.existsSync('Gruntfile.js');
+    var gruntContent;
+    var gruntfileData;
+    var output
     if (!exists) {
-      var gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
+      gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
       fs.writeFileSync('Gruntfile.js', gruntContent);
     }
     //let's update Gruntfile.js if possible
-    var gruntfileData = fs.readFileSync('Gruntfile.js'),
-      output = gruntFileApi.init(gruntfileData);
+    gruntfileData = fs.readFileSync('Gruntfile.js');
+    output = gruntFileApi.init(gruntfileData);
     output.registerTask('auto', ['loopmocha'], 'overwrite');
     if (that.sauceSetup === "Yes") {
       output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
@@ -79,94 +80,89 @@ var NemoGenerator = yeoman.generators.Base.extend({
       done();
     });
   },
+
   app: function () {
-    var baseDir = this.baseDirOption,
-      utilDir = baseDir + "/util",
-      configDir = baseDir + "/config",
-      locatorDir = baseDir + "/locator",
-      reportDir = baseDir + "/report",
-      specDir = baseDir + "/spec",
-      featureDir = baseDir + "/features",
-      stepDefDir = featureDir + "/step_definitions",
-      flowDir = baseDir + "/flow",
-      taskDir = "tasks/";
+    var baseDir = this.baseDirOption;
+    var utilDir = baseDir + "/util";
+    var configDir = baseDir + "/config";
+    var locatorDir = baseDir + "/locator";
+    var reportDir = baseDir + "/report";
+    var specDir = baseDir + "/spec";
+    var featureDir = baseDir + "/features";
+    var stepDefDir = featureDir + "/step_definitions";
+    var flowDir = baseDir + "/flow";
+    var taskDir = "tasks/";
     var done = this.async();
+    var _ = this._;
+    var self = this;
+    var newval;
     //base test directory
     this.mkdir(baseDir);
-    //console.log("_", this._);
-    var _ = this._;
     this._.templateSettings.imports.loscape = function (val) {
-      var newval = "<%=" + val + "%>";
+      newval = "<%=" + val + "%>";
       return newval;
     };
-    if (this.testFramework === 'mocha') {
-      this.template('_loopmocha.js', taskDir + 'loopmocha.js');
-    } else if (this.testFramework === 'cucumberjs') {
-      this.mkdir(baseDir + "/support");
-      this.template('_world.js', baseDir + "/support/" + 'world.js');
-      this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+    function copyData(prefix, dir, fileNames) {
+      fileNames.forEach(function (fileName) {
+        self.copy(prefix + fileName, dir + fileName);
+      });
     }
-
-
-    //config dir
-    this.mkdir(configDir);
-    this.template('_config.json', configDir + '/config.json');
-    //locator dir
-    this.mkdir(locatorDir);
-
-    //report dir
-    this.mkdir(reportDir);
-    this.copy('test/functional/report/README.md', reportDir + '/README.md');
-
-
-    if (this.testFramework === 'cucumberjs') {
-      this.copy('test/functional/features/step_definitions/hooks.js', featureDir + '/step_definitions/hooks.js');
-      this.mkdir(featureDir);
-      this.mkdir(stepDefDir);
-    } else if (this.testFramework === 'mocha') {
-      this.mkdir(utilDir);
-      this.copy('test/functional/util/index.js', utilDir + '/index.js');
+    function copyFlows(dir, fileNames) {
+      copyData('test/functional/flow', dir, fileNames);
     }
-    //flow dir
-    this.mkdir(flowDir);
-
-    //copy flows
-
-    if (this.testFramework === 'mocha') {
-      this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
-      this.copy('test/functional/flow/card.js', flowDir + '/card.js');
-      this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
-      //spec dir
-      this.mkdir(specDir);
-      this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
-      this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
-      this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
-      this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
-      //copy specs
-      this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
-      this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
-      this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
-    } else if (this.testFramework === 'cucumberjs') {
-      this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
-      this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
-      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
-      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+    function copyLocators(dir, fileNames) {
+      copyData('test/functional/locator', dir, fileNames);
     }
-    //}
+    function copySpecs(dir, fileNames) {
+      copyData('test/functional/spec', dir, fileNames);
+    }
+    function copyFeatures(dir, fileNames) {
+      copyData('test/functional/features', dir, fileNames);
+    }
+    function setUpDirectories() {
+      //config dir
+      self.mkdir(configDir);
+      self.template('_config.json', configDir + '/config.json');
+      //locator dir
+      self.mkdir(locatorDir);
+      //report dir
+      self.mkdir(reportDir);
+      self.copy('test/functional/report/README.md', reportDir + '/README.md');
+      self.mkdir(flowDir);
+    }
+    if (self.testFramework === 'mocha') {
+      self.template('_loopmocha.js', taskDir + 'loopmocha.js');
+      setUpDirectories();
+      self.mkdir(utilDir);
+      self.copy('test/functional/util/index.js', utilDir + '/index.js');
+      copyFlows(flowDir, ['/bank.js', '/card.js', '/navigate.js']);
+      copyLocators(locatorDir, ['/bank.json', '/card.json', '/login.json', '/nav.json'])
+      self.mkdir(specDir);
+      copySpecs(specDir, ['/flow-spec.js', '/generic-spec.js', '/view-spec.js'])
+    } else if (self.testFramework === 'cucumberjs') {
+      self.mkdir(baseDir + "/support");
+      self.template('_world.js', baseDir + "/support/" + 'world.js');
+      self.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+      setUpDirectories();
+      self.mkdir(featureDir);
+      self.mkdir(stepDefDir);
+      copyFeatures(featureDir, ['/step_definitions/hooks.js', '/yahooreg.feature', '/step_definitions/yahooRegStepDefs.js']);
+      copyLocators(locatorDir, ['/yhooreg.json']);
+      copyFlows(flowDir, ['/yreg.js']);
+    }
     done();
-    this.mkdir('app/templates');
-
-    //this.copy('_package.json', 'package.json');
-    //this.copy('_bower.json', 'bower.json');
+    self.mkdir('app/templates');
   },
   installThings: function () {
-    var listening = false, cmd;
+    var listening = false;
+    var cmd;
+    var done;
     if (this.testFramework === 'mocha') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
     }
-    var done = this.async();
+    done = this.async();
     cmd.on('close', function (code) {
       console.log('child process exited with code ' + code);
       done();
@@ -190,8 +186,9 @@ var NemoGenerator = yeoman.generators.Base.extend({
   finalValidation: function () {
     var done = this.async();
     var browser = this.browserOption;
+    var tryRunning;
     if (this.testFramework === 'mocha') {
-      var tryRunning = "Now try running 'grunt auto'";
+      tryRunning = "Now try running 'grunt auto'";
       tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
       this.log(chalk.green(tryRunning));
     } else if (this.testFramework === 'cucumberjs') {

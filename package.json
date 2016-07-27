@@ -34,15 +34,15 @@
     "yeoman-generator": "~0.16.0"
   },
   "devDependencies": {
-    "cucumber": "^0.4.8",
+    "cucumber": "^0.4.9",
     "grunt": "^0.4.5",
     "grunt-config-dir": "^0.3.2",
     "grunt-cucumberjs": "^0.5.2",
-    "grunt-loop-mocha": "^1.0.0",
+    "grunt-loop-mocha": "^1.2.2",
     "mocha": "*",
     "nconf": "^0.6.9",
-    "nemo": "^1.0.4",
-    "nemo-view": "^1.0.3",
+    "nemo": "^1.1.2",
+    "nemo-view": "^1.2.0",
     "path": "^0.11.14",
     "xunit-file": "0.0.4"
   },
