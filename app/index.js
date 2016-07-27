@@ -20,11 +20,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
   },
 
   askFor: function () {
+    var prompts;
     var done = this.async();
 
     nemoBanner();
 
-    var prompts = [
+    prompts = [
       {
         type: 'input',
         name: 'baseDirOption',
@@ -57,13 +58,16 @@ var NemoGenerator = yeoman.generators.Base.extend({
     var that = this;
     var done = this.async();
     var exists = fs.existsSync('Gruntfile.js');
+    var gruntContent;
+    var gruntfileData;
+    var output
     if (!exists) {
-      var gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
+      gruntContent = 'module.exports = function (grunt) { require(\'grunt-config-dir\')(grunt, {configDir: require(\'path\').resolve(\'tasks\')});};';
       fs.writeFileSync('Gruntfile.js', gruntContent);
     }
     //let's update Gruntfile.js if possible
-    var gruntfileData = fs.readFileSync('Gruntfile.js');
-    var output = gruntFileApi.init(gruntfileData);
+    gruntfileData = fs.readFileSync('Gruntfile.js');
+    output = gruntFileApi.init(gruntfileData);
     output.registerTask('auto', ['loopmocha'], 'overwrite');
     if (that.sauceSetup === "Yes") {
       output.registerTask('auto:mobile', ['loopmocha:sauce'], 'overwrite');
@@ -87,12 +91,12 @@ var NemoGenerator = yeoman.generators.Base.extend({
     var flowDir = baseDir + "/flow";
     var taskDir = "tasks/";
     var done = this.async();
+    var _ = this._;
+    var newval;
     //base test directory
     this.mkdir(baseDir);
-    //console.log("_", this._);
-    var _ = this._;
     this._.templateSettings.imports.loscape = function (val) {
-      var newval = "<%=" + val + "%>";
+      newval = "<%=" + val + "%>";
       return newval;
     };
     if (this.testFramework === 'mocha') {
@@ -158,12 +162,13 @@ var NemoGenerator = yeoman.generators.Base.extend({
   installThings: function () {
     var listening = false;
     var cmd;
+    var done;
     if (this.testFramework === 'mocha') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
     } else if (this.testFramework === 'cucumberjs') {
       cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
     }
-    var done = this.async();
+    done = this.async();
     cmd.on('close', function (code) {
       console.log('child process exited with code ' + code);
       done();
@@ -187,8 +192,9 @@ var NemoGenerator = yeoman.generators.Base.extend({
   finalValidation: function () {
     var done = this.async();
     var browser = this.browserOption;
+    var tryRunning;
     if (this.testFramework === 'mocha') {
-      var tryRunning = "Now try running 'grunt auto'";
+      tryRunning = "Now try running 'grunt auto'";
       tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
       this.log(chalk.green(tryRunning));
     } else if (this.testFramework === 'cucumberjs') {
