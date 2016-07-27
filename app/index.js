@@ -54,6 +54,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       done();
     }.bind(this));
   },
+
   editGruntfile: function () {
     var that = this;
     var done = this.async();
@@ -79,6 +80,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       done();
     });
   },
+
   app: function () {
     var baseDir = this.baseDirOption;
     var utilDir = baseDir + "/util";
@@ -92,6 +94,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
     var taskDir = "tasks/";
     var done = this.async();
     var _ = this._;
+    var self = this;
     var newval;
     //base test directory
     this.mkdir(baseDir);
@@ -99,65 +102,56 @@ var NemoGenerator = yeoman.generators.Base.extend({
       newval = "<%=" + val + "%>";
       return newval;
     };
-    if (this.testFramework === 'mocha') {
-      this.template('_loopmocha.js', taskDir + 'loopmocha.js');
-    } else if (this.testFramework === 'cucumberjs') {
-      this.mkdir(baseDir + "/support");
-      this.template('_world.js', baseDir + "/support/" + 'world.js');
-      this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+    function copyData(prefix, dir, fileNames) {
+      fileNames.forEach(function (fileName) {
+        self.copy(prefix + fileName, dir + fileName);
+      });
     }
-
-
-    //config dir
-    this.mkdir(configDir);
-    this.template('_config.json', configDir + '/config.json');
-    //locator dir
-    this.mkdir(locatorDir);
-
-    //report dir
-    this.mkdir(reportDir);
-    this.copy('test/functional/report/README.md', reportDir + '/README.md');
-
-
-    if (this.testFramework === 'cucumberjs') {
-      this.copy('test/functional/features/step_definitions/hooks.js', featureDir + '/step_definitions/hooks.js');
-      this.mkdir(featureDir);
-      this.mkdir(stepDefDir);
-    } else if (this.testFramework === 'mocha') {
-      this.mkdir(utilDir);
-      this.copy('test/functional/util/index.js', utilDir + '/index.js');
+    function copyFlows(dir, fileNames) {
+      copyData('test/functional/flow', dir, fileNames);
     }
-    //flow dir
-    this.mkdir(flowDir);
-
-    //copy flows
-
-    if (this.testFramework === 'mocha') {
-      this.copy('test/functional/flow/bank.js', flowDir + '/bank.js');
-      this.copy('test/functional/flow/card.js', flowDir + '/card.js');
-      this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
-      //spec dir
-      this.mkdir(specDir);
-      this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
-      this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
-      this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
-      this.copy('test/functional/locator/nav.json', locatorDir + '/nav.json');
-      //copy specs
-      this.template('test/functional/spec/flow-spec.js', specDir + '/flow-spec.js');
-      this.template('test/functional/spec/generic-spec.js', specDir + '/generic-spec.js');
-      this.template('test/functional/spec/view-spec.js', specDir + '/view-spec.js');
-    } else if (this.testFramework === 'cucumberjs') {
-      this.copy('test/functional/features/yahooreg.feature', featureDir + '/yahooreg.feature');
-      this.copy('test/functional/features/step_definitions/yahooRegStepDefs.js', featureDir + '/step_definitions/yahooRegStepDefs.js');
-      this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
-      this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
+    function copyLocators(dir, fileNames) {
+      copyData('test/functional/locator', dir, fileNames);
     }
-    //}
+    function copySpecs(dir, fileNames) {
+      copyData('test/functional/spec', dir, fileNames);
+    }
+    function copyFeatures(dir, fileNames) {
+      copyData('test/functional/features', dir, fileNames);
+    }
+    function setUpDirectories() {
+      //config dir
+      self.mkdir(configDir);
+      self.template('_config.json', configDir + '/config.json');
+      //locator dir
+      self.mkdir(locatorDir);
+      //report dir
+      self.mkdir(reportDir);
+      self.copy('test/functional/report/README.md', reportDir + '/README.md');
+      self.mkdir(flowDir);
+    }
+    if (self.testFramework === 'mocha') {
+      self.template('_loopmocha.js', taskDir + 'loopmocha.js');
+      setUpDirectories();
+      self.mkdir(utilDir);
+      self.copy('test/functional/util/index.js', utilDir + '/index.js');
+      copyFlows(flowDir, ['/bank.js', '/card.js', '/navigate.js']);
+      copyLocators(locatorDir, ['/bank.json', '/card.json', '/login.json', '/nav.json'])
+      self.mkdir(specDir);
+      copySpecs(specDir, ['/flow-spec.js', '/generic-spec.js', '/view-spec.js'])
+    } else if (self.testFramework === 'cucumberjs') {
+      self.mkdir(baseDir + "/support");
+      self.template('_world.js', baseDir + "/support/" + 'world.js');
+      self.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
+      setUpDirectories();
+      self.mkdir(featureDir);
+      self.mkdir(stepDefDir);
+      copyFeatures(featureDir, ['/step_definitions/hooks.js', '/yahooreg.feature', '/step_definitions/yahooRegStepDefs.js']);
+      copyLocators(locatorDir, ['/yhooreg.json']);
+      copyFlows(flowDir, ['/yreg.js']);
+    }
     done();
-    this.mkdir('app/templates');
-
-    //this.copy('_package.json', 'package.json');
-    //this.copy('_bower.json', 'bower.json');
+    self.mkdir('app/templates');
   },
   installThings: function () {
     var listening = false;
