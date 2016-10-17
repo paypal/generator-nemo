@@ -11,7 +11,7 @@
 
   },
   "data": {
-    "baseUrl": "https://fast-castle-8102.herokuapp.com"
+    "baseUrl": "<%= baseUrl %>"
 
   }
 }

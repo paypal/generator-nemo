@@ -1,0 +1,53 @@
+body {
+    font-family: Arial;
+}
+#wrapper {
+    width: 600px;
+    margin: auto;
+}
+h1 {
+    height: 40px;
+    margin: 5px;
+    padding: 5px;
+}
+#result {
+    font-weight: bold;
+    padding: 10px 0 10px 20px;
+    margin: 0;
+    color: #00F;
+    height: 35px;
+}
+#result p {
+    margin: 0;
+    padding: 0;
+}
+#nav {
+    margin-bottom: 10px;
+}
+label {
+    width: 150px;
+    float: left;
+    clear: left;
+    display: block;
+}
+input,
+select {
+    float: left;
+    margin-bottom: 5px;
+}
+input[type=button] {
+    clear: left;
+    margin-left: 150px;
+}
+.visible {
+    display: block;
+}
+.hidden {
+    display: none;
+}
+.bad {
+    color: red;
+}
+.good {
+    color: green;
+}
