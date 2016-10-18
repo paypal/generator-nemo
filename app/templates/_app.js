@@ -29,7 +29,6 @@ var app = {
 				result[0].innerHTML = "Please wait";
 				setTimeout(function () {
 					result[0].innerHTML = (bn === "1001001") ? "<p class='result bad'>Unable to add your bank account</p>" : "<p class='result good'>Successfully added your bank account</p>";
-					//result[0].innerHTML = "<p class='result good'>Successfully added your bank account</p>";
 				}, appTimeout);
 			});
 		});

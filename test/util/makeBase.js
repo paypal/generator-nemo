@@ -17,6 +17,8 @@ module.exports = function makeBase(generator) {
     },
 
     prompt: {
+      'existingServer': true,
+      'newAppDir': 'myNewApp',
       'testFramework': 'mocha',
       'baseDirOption': 'test/functional',
       'browserOption': 'phantomjs'

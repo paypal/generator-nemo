@@ -3,7 +3,7 @@
 var helpers = require('yeoman-generator').test;
 var testutil = require('./util');
 
-describe('nemo generator', function () {
+describe('cucumber', function () {
   // Disable timeout since we're doing multiple installs
   this.timeout(Infinity);
 

@@ -67,7 +67,6 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.newAppDir = props.newAppDir;
       this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
       this.baseUrl = (props.existingServer) ? 'https://fast-castle-8102.herokuapp.com' : 'http://localhost:3000';
-      //console.log(this.user);
       this.gitName = this.user.git.username;
       done();
     }.bind(this));
@@ -119,7 +118,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.copy('_index.html', 'public/index.html');
       this.copy('_app.css', 'public/app.css');
       this.copy('_app.js', 'public/app.js');
-      this.copy('_server.js', 'server.js');
+      this.template('_server.js', 'server.js');
 
     }
     if (this.testFramework === 'mocha') {
