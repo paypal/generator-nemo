@@ -1,7 +1,7 @@
 /*global describe, beforeEach, it */
 'use strict';
-var helpers = require('yeoman-generator').test;
 var testutil = require('./util');
+var yeomanAssert = require('yeoman-assert');
 
 describe('cucumber', function () {
   // Disable timeout since we're doing multiple installs
@@ -23,7 +23,7 @@ describe('cucumber', function () {
         'test/functional/features/step_definitions/yahooRegStepDefs.js',
         'Gruntfile.js'
       ];
-      helpers.assertFile(expected);
+      yeomanAssert.file(expected);
       done(err);
     });
   });

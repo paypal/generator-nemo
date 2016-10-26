@@ -31,6 +31,8 @@
   "dependencies": {
     "chalk": "~1.0.0",
     "gruntfile-api": "0.0.9",
+    "lodash": "^4.16.4",
+    "mkdirp": "^0.5.1",
     "yeoman-generator": "~0.24.0"
   },
   "devDependencies": {
@@ -45,6 +47,7 @@
     "nemo-view": "^2.1.1",
     "path": "^0.11.14",
     "xunit-file": "0.0.4",
+    "yeoman-assert": "^2.2.1",
     "yeoman-test": "^1.5.1"
   },
   "peerDependencies": {

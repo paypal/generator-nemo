@@ -9,7 +9,7 @@ module.exports = function loopmocha(grunt) {
   grunt.loadNpmTasks('grunt-loop-mocha');
   // Options
   return {
-    "src": ["<%= loscape('loopmocha.options.basedir') %>/spec/*.js"],
+    "src": ["<%= loopmocha.options.basedir %>/spec/*.js"],
     "options": {
       "mocha": {
         "timeout": grunt.option("timeout") || 600000,
@@ -17,10 +17,10 @@ module.exports = function loopmocha(grunt) {
         "debug": grunt.option("debug") || 0,
         "reporter": grunt.option("reporter") || "spec"
       },
-      "basedir": process.cwd() + "/" + "<%= baseDirOption %>",
-      "nemoBaseDir": "<%= loscape('loopmocha.options.basedir') %>",
+      "basedir": process.cwd() + "/" + "<☃= baseDirOption ☃>",
+      "nemoBaseDir": "<%= loopmocha.options.basedir %>",
       "loop": {
-        "reportLocation": grunt.option("reportLocation") || "<%=loscape('loopmocha.options.basedir') %>/report",
+        "reportLocation": grunt.option("reportLocation") || "<%=loopmocha.options.basedir %>/report",
         "parallel": {
           "type": "file"
         }

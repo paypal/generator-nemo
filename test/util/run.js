@@ -20,7 +20,7 @@ module.exports = function run(config, done) {
     app = helpers.createGenerator(config.type, config.dependencies, config.args, config.options);
     helpers.mockPrompt(app, config.prompt);
 
-    app.run({}, function (err) {
+    app.run(function (err) {
       if (app.options['skip-install']) {
         done(err, app);
       } else {

@@ -1,7 +1,6 @@
 /*global describe, beforeEach, it */
 
 'use strict';
-var helpers = require('yeoman-test');
 var yeomanAssert = require('yeoman-assert');
 var assert = require('assert');
 var path = require('path');
@@ -40,16 +39,15 @@ describe('mocha', function () {
   });
 
   //TODO: figure out why this unit test is failing and fix it
-  //it('creates expected mocha/server supporting files', function (done) {
-  //  var base = testutil.makeBase('app');
-  //  base.prompt.existingServer = 'No';
-  //  base.prompt.newAppDir = 'myNewApp';
-  //  testutil.run(base, function (err) {
-  //    //helpers.assertFile(expected.mocha.map(function (file) {return 'myNewApp/' + file}));
-  //    yeomanAssert.file(expected.server);//.map(function (file) {return 'myNewApp/' + file}));
-  //    testutil.assertGruntTasks(['auto']);
-  //    assert(require(path.resolve(__dirname, '../temp/test/functional/config/config')).driver.browser === 'phantomjs');
-  //    done(err);
-  //  });
-  //});
+  it('creates expected mocha/server supporting files', function (done) {
+    var base = testutil.makeBase('app');
+    base.prompt.existingServer = false;
+    base.prompt.newAppDir = 'myNewApp';
+    testutil.run(base, function (err) {
+      yeomanAssert.file(expected.server);
+      testutil.assertGruntTasks(['auto']);
+      assert(require(path.resolve(__dirname, '../temp/myNewApp/test/functional/config/config')).driver.browser === 'phantomjs');
+      done(err);
+    });
+  });
 });
