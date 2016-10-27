@@ -31,20 +31,24 @@
   "dependencies": {
     "chalk": "~1.0.0",
     "gruntfile-api": "0.0.9",
-    "yeoman-generator": "~0.16.0"
+    "lodash": "^4.16.4",
+    "mkdirp": "^0.5.1",
+    "yeoman-generator": "~0.24.0"
   },
   "devDependencies": {
-    "cucumber": "^0.4.8",
-    "grunt": "^0.4.5",
+    "cucumber": "^0.4.9",
+    "grunt": "^1.0.1",
     "grunt-config-dir": "^0.3.2",
     "grunt-cucumberjs": "^0.5.2",
-    "grunt-loop-mocha": "^1.0.0",
+    "grunt-loop-mocha": "^1.2.2",
     "mocha": "*",
     "nconf": "^0.6.9",
-    "nemo": "^1.0.4",
-    "nemo-view": "^1.0.3",
+    "nemo": "^2.3.1",
+    "nemo-view": "^2.1.1",
     "path": "^0.11.14",
-    "xunit-file": "0.0.4"
+    "xunit-file": "0.0.4",
+    "yeoman-assert": "^2.2.1",
+    "yeoman-test": "^1.5.1"
   },
   "peerDependencies": {
     "yo": ">=1.0.0"

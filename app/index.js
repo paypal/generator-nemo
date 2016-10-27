@@ -4,32 +4,33 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 var banner = require('./lib/banner');
 var chalk = require('chalk');
+var mkdirp = require('mkdirp').sync;
 var fs = require('fs');
-//var _ = require('lodash');
+var _ = require('lodash');
 var gruntFileApi = require('gruntfile-api');
 
-var NemoGenerator = yeoman.generators.Base.extend({
+var NemoGenerator = yeoman.Base.extend({
   init: function () {
     this.pkg = require('../package.json');
-    this.options['skip-install'] = true;
-    this.on('end', function () {
-      if (!this.options['skip-install']) {
-        this.installDependencies();
-      }
-    });
 
   },
 
   askFor: function () {
-    var done = this.async();
-
     //Nemo banner
     banner();
 
-    // replace it with a short and sweet description of your generator
-    //this.log(chalk.magenta('You\'re using the fantastic Nemo generator.'));
-
     var prompts = [{
+      type: 'confirm',
+      name: 'existingServer',
+      message: 'Write into existing app?'
+    }, {
+      type: 'input',
+      name: 'newAppDir',
+      message: 'Name your app (creates directory beneath current one)',
+      when: function (answers) {
+        return !answers.existingServer;
+      }
+    }, {
       type: 'input',
       name: 'baseDirOption',
       message: 'What is the desired base directory for your tests, starting from your app root directory?',
@@ -49,12 +50,19 @@ var NemoGenerator = yeoman.generators.Base.extend({
     }
     ];
 
-    this.prompt(prompts, function (props) {
+    return this.prompt(prompts).then(function (props) {
+      //calculate and set base directory. e.g. generator.destinationRoot('new/path')
+      var destRoot = (props.existingServer) ? path.resolve(process.cwd()) : path.resolve(process.cwd(), props.newAppDir);
+      this.destinationRoot(destRoot);
       this.baseDirOption = props.baseDirOption;
       this.browserOption = props.browserOption;
       this.testFramework = props.testFramework;
+      this.existingServer = props.existingServer;
+      this.newAppDir = props.newAppDir;
       this.deployedUrl = (!!props.deployedUrl) ? props.deployedUrl : undefined;
-      done();
+      this.baseUrl = (props.existingServer) ? 'https://fast-castle-8102.herokuapp.com' : 'http://localhost:3000';
+      this.gitName = this.user.git.username;
+      return true;
     }.bind(this));
   },
   editGruntfile: function () {
@@ -92,43 +100,49 @@ var NemoGenerator = yeoman.generators.Base.extend({
       taskDir = "tasks/";
     var done = this.async();
     //base test directory
-    this.mkdir(baseDir);
-    //console.log("_", this._);
-    var _ = this._;
-    this._.templateSettings.imports.loscape = function (val) {
-      var newval = "<%=" + val + "%>";
-      return newval;
-    };
+    mkdirp(baseDir);
+
+    if (!this.existingServer) {
+      this.template('_package.json', 'package.json');
+      mkdirp('public');
+      this.copy('_index.html', 'public/index.html');
+      this.copy('_app.css', 'public/app.css');
+      this.copy('_app.js', 'public/app.js');
+      this.template('_server.js', 'server.js');
+
+    }
     if (this.testFramework === 'mocha') {
-      this.template('_loopmocha.js', taskDir + 'loopmocha.js');
+      mkdirp(taskDir);
+      //loopmocha.js has some underscore template delimiters already so use ☃
+      this.template('_loopmocha.js', taskDir + 'loopmocha.js', this, {delimiter: '☃'});
     } else if (this.testFramework === 'cucumberjs') {
-      this.mkdir(baseDir + "/support");
+      mkdirp(baseDir + "/support");
       this.template('_world.js', baseDir + "/support/" + 'world.js');
       this.template('_cucumberjs.js', taskDir + 'cucumberjs.js');
     }
 
 
     //config dir
-    this.mkdir(configDir);
+    mkdirp(configDir);
     this.template('_config.json', configDir + '/config.json');
     //locator dir
-    this.mkdir(locatorDir);
+    mkdirp(locatorDir);
 
     //report dir
-    this.mkdir(reportDir);
+    mkdirp(reportDir);
     this.copy('test/functional/report/README.md', reportDir + '/README.md');
 
 
     if (this.testFramework === 'cucumberjs') {
       this.copy('test/functional/features/step_definitions/hooks.js', featureDir + '/step_definitions/hooks.js');
-      this.mkdir(featureDir);
-      this.mkdir(stepDefDir);
+      mkdirp(featureDir);
+      mkdirp(stepDefDir);
     } else if (this.testFramework === 'mocha') {
-      this.mkdir(utilDir);
+      mkdirp(utilDir);
       this.copy('test/functional/util/index.js', utilDir + '/index.js');
     }
     //flow dir
-    this.mkdir(flowDir);
+    mkdirp(flowDir);
 
     //copy flows
 
@@ -137,7 +151,7 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.copy('test/functional/flow/card.js', flowDir + '/card.js');
       this.copy('test/functional/flow/navigate.js', flowDir + '/navigate.js');
       //spec dir
-      this.mkdir(specDir);
+      mkdirp(specDir);
       this.copy('test/functional/locator/bank.json', locatorDir + '/bank.json');
       this.copy('test/functional/locator/card.json', locatorDir + '/card.json');
       this.copy('test/functional/locator/login.json', locatorDir + '/login.json');
@@ -152,53 +166,33 @@ var NemoGenerator = yeoman.generators.Base.extend({
       this.copy('test/functional/locator/yhooreg.json', locatorDir + '/yhooreg.json');
       this.copy('test/functional/flow/yreg.js', flowDir + '/yreg.js');
     }
-    //}
+
     done();
-    this.mkdir('app/templates');
 
-    //this.copy('_package.json', 'package.json');
-    //this.copy('_bower.json', 'bower.json');
+
   },
-  installThings: function () {
-    var listening = false, cmd;
+  installer: function () {
+    var devDeps = ["grunt@^v1.0.1", "nemo@^v2.3.1", "nemo-view@^v2.1.1", "grunt-config-dir"];
     if (this.testFramework === 'mocha') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "grunt-loop-mocha@^v1.0.0", "nconf@~v0.6.7", "xunit-file@v0.0.4", "grunt-config-dir@^0.3.2"]);
-    } else if (this.testFramework === 'cucumberjs') {
-      cmd = this.spawnCommand("npm", ["install", "--save-dev", "cucumber@^0.4.4", "nemo@^v1.0.0", "nemo-view@^v1.0.0", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1", "grunt-config-dir@^0.3.2"]);
+      devDeps = devDeps.concat(["grunt-loop-mocha", "nconf", "xunit-file"]);
+    } else {
+      devDeps = devDeps.concat(["cucumber@^0.4.4", "path@^0.11.14", "grunt-cucumberjs@^v0.5.1"]);
     }
-    var done = this.async();
-    cmd.on('close', function (code) {
-      console.log('child process exited with code ' + code);
-      done();
-    });
-
-    cmd.on('error', function (err) {
-      console.log('child process exited with error ' + err);
-      done();
-    });
-    cmd.on('message', function () {
-      if (listening === false) {
-        listening = true;
-        cmd.stdout.on('data', function (data) {
-          console.log('Received data...');
-          console.log(data.toString('utf8'));
-        });
-      }
-    });
+    this.npmInstall(devDeps, {'save-dev': true});
+    if (!this.existingServer) {
+      this.npmInstall(["express"], {save: true});
+    }
   },
-
-  finalValidation: function () {
-    var done = this.async();
-    var browser = this.browserOption;
-    if (this.testFramework === 'mocha') {
+  end: function () {
+    if(this.testFramework === 'mocha') {
       var tryRunning = "Now try running 'grunt auto'";
       tryRunning += (this.sauceSetup === "Yes") ? "or 'grunt auto:mobile'" : "";
       this.log(chalk.green(tryRunning));
-    } else if (this.testFramework === 'cucumberjs') {
+    } else if(this.testFramework === 'cucumberjs') {
       this.log(chalk.green("Now try running 'grunt cucumberjs'"));
     }
-    done();
   }
+
 });
 
 module.exports = NemoGenerator;

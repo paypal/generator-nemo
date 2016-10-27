@@ -1,0 +1,14 @@
+{
+    "name": "<%= newAppDir %>",
+    "version": "1.0.0",
+    "description": "<%= newAppDir %> with nemo automation",
+    "main": "server.js",
+    "scripts": {
+        "test": "grunt auto"
+    },
+    "keywords": [
+        "nemo"
+    ],
+    "author": "<%= gitName %>",
+    "license": "ISC"
+}

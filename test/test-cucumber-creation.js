@@ -1,9 +1,9 @@
 /*global describe, beforeEach, it */
 'use strict';
-var helpers = require('yeoman-generator').test;
 var testutil = require('./util');
+var yeomanAssert = require('yeoman-assert');
 
-describe('nemo generator', function () {
+describe('cucumber', function () {
   // Disable timeout since we're doing multiple installs
   this.timeout(Infinity);
 
@@ -23,7 +23,7 @@ describe('nemo generator', function () {
         'test/functional/features/step_definitions/yahooRegStepDefs.js',
         'Gruntfile.js'
       ];
-      helpers.assertFile(expected);
+      yeomanAssert.file(expected);
       done(err);
     });
   });
