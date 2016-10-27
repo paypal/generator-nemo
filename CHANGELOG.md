@@ -1,6 +1,6 @@
 # generator-nemo changelog
 
-## UNRELEASED
+## v2.0.0 
 
 * Feature: add ability to generate express project for a quick server/suite all at once
 * Update to yeoman-test and yeoman-assert modules
